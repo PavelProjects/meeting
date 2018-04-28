@@ -1,6 +1,5 @@
 package com.example.root.meeting;
 
-import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
