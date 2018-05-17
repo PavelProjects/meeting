@@ -23,6 +23,8 @@
         <activity android:name=".StartMeetingActivity"></activity>
         <activity android:name=".MeetingActivity"></activity>
         <activity android:name=".AddUser"></activity>
+        <activity android:name=".UserProfile"></activity>
+        <activity android:name=".CreateMeeting"></activity>
     </application>
 
 </manifest>

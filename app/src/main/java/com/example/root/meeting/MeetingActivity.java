@@ -15,10 +15,9 @@ import android.widget.Toast;
 import com.example.root.meeting.ObRealm.Meeting;
 import com.example.root.meeting.ObRealm.User;
 
-import org.json.JSONArray;
+import java.util.ArrayList;
+import java.util.List;
 
-import io.realm.Realm;
-import io.realm.RealmList;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,11 +28,10 @@ import retrofit2.Response;
  */
 
 public class MeetingActivity extends AppCompatActivity {
-    private RealmList<User> users  = new RealmList<>();
+    private List<User> users  = new ArrayList<>();
     private ArrayAdapter<User> adapter;
-    Meeting meeting;
+    Meeting meeting = new Meeting();
     private int pid = 0;
-    Realm realm;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,16 +42,13 @@ public class MeetingActivity extends AppCompatActivity {
         if (pid==0){
             finish();
         }
-        Realm.init(getApplicationContext());
-        realm = Realm.getDefaultInstance();
-        meeting = realm.where(Meeting.class).equalTo("id",pid).findFirst();
-
-        if (meeting == null){
+        getMeeting(pid);
+        if (meeting!=null) {
+            users = meeting.getUsers();
+        }else{
             Toast.makeText(this,"cant find this meeting", Toast.LENGTH_SHORT).show();
             finish();
         }
-        ((TextView)findViewById(R.id.textView)).setText(meeting.getName());
-        users = meeting.getUsers();
         ListView lvMain = (ListView) findViewById(R.id.members_list);
         adapter = new ArrayAdapter<User>(this,
                 android.R.layout.simple_list_item_1,android.R.id.text1, users){
@@ -70,17 +65,10 @@ public class MeetingActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 User user =users.get(i);
                 deleteUser(user.getId());
-                realm.beginTransaction();
-                user.deleteFromRealm();
-                realm.commitTransaction();
+                users.remove(i);
                 adapter.notifyDataSetChanged();
             }
         });
-        if (intent.getStringExtra("flag")!=null) {
-            if (intent.getStringExtra("flag").equals("update")) {
-                updateData();
-            }
-        }
     }
 
     public void addUser(View view){
@@ -100,31 +88,26 @@ public class MeetingActivity extends AppCompatActivity {
             }
         });
     }
-    public void updateData(){
-        App.getApi().getMeeting(MainActivity.getAuthToken(),pid).enqueue(new Callback<Meeting>() {
+    public void getMeeting(int id){
+        App.getApi().getMeeting(MainActivity.getAuthToken(),id).enqueue(new Callback<Meeting>() {
             @Override
             public void onResponse(Call<Meeting> call, Response<Meeting> response) {
-                if (response.body() != null) {
-                    if (response.code()==200) {
-                        realm.beginTransaction();
-                        meeting = realm.copyToRealmOrUpdate(response.body());
-                        realm.commitTransaction();
-                    }
-                }else if (response.code()==401){
-                    Toast.makeText(MeetingActivity.this,"bad auth values",Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(MeetingActivity.this, AuthWind.class));
-                    finish();
+                if (response.isSuccessful()){
+                    meeting.setId(response.body().getId());
+                    meeting.setName(response.body().getName());
+                    getSupportActionBar().setTitle(response.body().getName());
+                    meeting.setAdmin(response.body().getAdmin());
+                    meeting.addAllUsers(response.body().getUsers());
+                }else{
+                    Toast.makeText(MeetingActivity.this,"error",Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Meeting> call, Throwable t) {
-                Toast.makeText(MeetingActivity.this, "error " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MeetingActivity.this,t.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
             }
         });
-        ((TextView)findViewById(R.id.textView)).setText(meeting.getName());
-        users = meeting.getUsers();
-        adapter.notifyDataSetChanged();
     }
 
 }

@@ -1,22 +1,17 @@
 package com.example.root.meeting.ObRealm;
 
-import javax.annotation.Nonnull;
-
-import io.realm.RealmList;
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by root on 08.04.18.
  */
 
-public class Meeting extends RealmObject {
-    @PrimaryKey
+public class Meeting{
     private int id;
-    @Nonnull
     private String name;
     private int admin;
-    private RealmList<User> users= new RealmList<>();
+    private List<User> users= new ArrayList<>();
 
     public void setId(int id) {
         this.id = id;
@@ -34,19 +29,25 @@ public class Meeting extends RealmObject {
         this.admin = admin;
     }
 
-    @Nonnull
     public String getName() {
         return name;
     }
 
-    public void setName(@Nonnull String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public RealmList<User> getUsers() {
+    public List<User> getUsers() {
         return users;
     }
     public void addUser (User user){
         users.add(user);
+    }
+    public void addAllUsers(List<User> user){
+        for (User ur:user){
+            if (!users.equals(ur)){
+                users.add(ur);
+            }
+        }
     }
 }

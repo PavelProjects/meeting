@@ -13,10 +13,8 @@ import android.widget.Toast;
 
 import com.example.root.meeting.ObRealm.Meeting;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import io.realm.Realm;
-import io.realm.RealmList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -26,16 +24,13 @@ import retrofit2.Response;
  */
 
 public class StartMeetingActivity extends AppCompatActivity{
-    private RealmList<Meeting> meetings = new RealmList<>();
+    private List<Meeting> meetings = new ArrayList<>();
     private ArrayAdapter<Meeting> adapter;
-    private Realm realm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_meeting);
-        Realm.init(getApplicationContext());
-        realm=Realm.getDefaultInstance();
-        meetings.addAll(realm.where(Meeting.class).findAll());
+
         ListView lvMain = (ListView) findViewById(R.id.meeting);
         adapter = new ArrayAdapter<Meeting>(this,
                 android.R.layout.simple_list_item_2,android.R.id.text1, meetings){
@@ -58,17 +53,17 @@ public class StartMeetingActivity extends AppCompatActivity{
         });
         updateData();
     }
+    public void createMeeting(View view){
+        startActivity(new Intent(this,CreateMeeting.class));
+    }
     private void updateData(){
-        App.getApi().getMeetings(MainActivity.getAuthToken()).enqueue(new Callback<List<Meeting>>() {
+        App.getApi().getAllMeetings(MainActivity.getAuthToken()).enqueue(new Callback<List<Meeting>>() {
             @Override
             public void onResponse(Call<List<Meeting>> call, Response<List<Meeting>> response) {
                 if (response.body() != null) {
                     if (response.code()==200) {
                         meetings.clear();
-                        realm.beginTransaction();
                         meetings.addAll(response.body());
-                        realm.copyToRealmOrUpdate(meetings);
-                        realm.commitTransaction();
                         adapter.notifyDataSetChanged();
                     }
                 }else if (response.code()==401){

@@ -13,8 +13,6 @@ import android.widget.Toast;
 import com.example.root.meeting.ObRealm.User;
 
 import java.io.UnsupportedEncodingException;
-import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -75,14 +73,17 @@ public class AuthWind extends AppCompatActivity {
     }
 
     private void check(String username, String password){
-        App.getApi().getUsers(getAuthToken(username,password)).enqueue(new Callback<List<User>>() {
+        App.getApi().authUser(getAuthToken(username,password)).enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                code=response.code();
+            public void onResponse(Call<User> call, Response<User> response) {
+                code = response.code();
+                editor = userKeys.edit();
+                editor.putInt("id",response.body().getId());
+                editor.apply();
             }
 
             @Override
-            public void onFailure(Call<List<User>> call, Throwable t) {
+            public void onFailure(Call<User> call, Throwable t) {
                 Toast.makeText(AuthWind.this, "error " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

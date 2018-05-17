@@ -2,6 +2,7 @@ package com.example.root.meeting;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -15,34 +16,26 @@ import android.widget.Toast;
 import com.example.root.meeting.ObRealm.User;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
-
-import io.realm.Realm;
-import io.realm.RealmList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
-    SharedPreferences userKey;
+    private SharedPreferences userKey;
     private static String userNp;
-    SharedPreferences.Editor editor;
-    private RealmList<User> users = new RealmList<User>();
-    ArrayAdapter<User> adapter;
-    Realm realm;
+    private SharedPreferences.Editor editor;
+    private List<User> users = new ArrayList<User>();
+    private ArrayAdapter<User> adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Realm.init(getBaseContext());
-        realm=Realm.getDefaultInstance();
         userKey=getSharedPreferences("UserKeys",MODE_PRIVATE);
         userNp=userKey.getString("username","")+":"+userKey.getString("password","");
 
         checkAuth();
-
-        users.addAll(realm.where(User.class).findAll());
-
         ListView lvMain = (ListView) findViewById(R.id.userslist);
         adapter = new ArrayAdapter<User>(this,
                 android.R.layout.two_line_list_item,android.R.id.text1,users){
@@ -62,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         updateData();
     }
 
+    @NonNull
     public static String getAuthToken() {
         byte[] data = new byte[0];
         try {
@@ -78,11 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 if (response.body() != null) {
                     if (response.code()==200) {
                         users.clear();
-                        Realm.init(getBaseContext());
-                        realm=Realm.getDefaultInstance();
-                        realm.beginTransaction();
                         users.addAll(response.body());
-                        realm.commitTransaction();
                         adapter.notifyDataSetChanged();
                     }else if (response.code()==401){
                         Toast.makeText(MainActivity.this,"bad auth values",Toast.LENGTH_SHORT).show();
@@ -99,13 +89,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    public void userExit(View view){
-        editor=userKey.edit();
-        editor.putString("username",null);
-        editor.putString("password",null);
-        editor.apply();
-        finish();
-    }
 
     private void checkAuth(){
         if (userNp!=null){
@@ -117,12 +100,14 @@ public class MainActivity extends AppCompatActivity {
     public void startM(View view){
         startActivity(new Intent(MainActivity.this,StartMeetingActivity.class));
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        realm.beginTransaction();
-        realm.deleteAll();
-        realm.commitTransaction();
+    public void userProfile(View view){
+        startActivity(new Intent(MainActivity.this,UserProfile.class).putExtra("id",userKey.getInt("id",0)));
+    }
+    public void userExit(View view){
+        editor=userKey.edit();
+        editor.putString("username",null);
+        editor.putString("password",null);
+        editor.apply();
+        finish();
     }
 }
