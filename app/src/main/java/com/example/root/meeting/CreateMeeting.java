@@ -27,30 +27,27 @@ public class CreateMeeting extends AppCompatActivity {
     }
     public void createMeeting (View view) throws InterruptedException {
         Meeting meeting = new Meeting();
-        String st = ((EditText)findViewById(R.id.meetingName)).getText().toString();
-        if (st!=null){
-            if (st.length()>0){
+        String st = ((EditText) findViewById(R.id.meetingName)).getText().toString();
+        if (st != null) {
+            if (st.length() > 0) {
                 meeting.setName(st);
-                App.getApi().createMeeting(MainActivity.getAuthToken(),meeting).enqueue(new Callback<Meeting>() {
+                App.getApi().createMeeting(MainActivity.getAuthToken(), meeting).enqueue(new Callback<Meeting>() {
                     @Override
                     public void onResponse(Call<Meeting> call, Response<Meeting> response) {
-                        if (response.isSuccessful()){
-                                id= response.body().getId();
+                        if (response.isSuccessful()) {
+                            id = response.body().getId();
+                            startActivity(new Intent(CreateMeeting.this,MeetingActivity.class).putExtra("id", id));
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Meeting> call, Throwable t) {
-                        Toast.makeText(CreateMeeting.this,"error"+t.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CreateMeeting.this, "error" + t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
-            }else {
-                Toast.makeText(this,"need name",Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "need name", Toast.LENGTH_SHORT).show();
             }
         }
-        start();
-    }
-    private void start(){
-        startActivity(new Intent(CreateMeeting.this,MeetingActivity.class).putExtra("id", id));
     }
 }

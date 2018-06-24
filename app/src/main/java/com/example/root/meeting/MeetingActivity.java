@@ -23,10 +23,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Created by root on 18.04.18.
- */
-
 public class MeetingActivity extends AppCompatActivity {
     private List<User> users  = new ArrayList<>();
     private ArrayAdapter<User> adapter;
@@ -88,16 +84,20 @@ public class MeetingActivity extends AppCompatActivity {
             }
         });
     }
-    public void getMeeting(int id){
+    public void getMeeting(final int id){
         App.getApi().getMeeting(MainActivity.getAuthToken(),id).enqueue(new Callback<Meeting>() {
             @Override
             public void onResponse(Call<Meeting> call, Response<Meeting> response) {
                 if (response.isSuccessful()){
-                    meeting.setId(response.body().getId());
-                    meeting.setName(response.body().getName());
-                    getSupportActionBar().setTitle(response.body().getName());
-                    meeting.setAdmin(response.body().getAdmin());
-                    meeting.addAllUsers(response.body().getUsers());
+                    if (response.body()!= null) {
+                        meeting.setId(response.body().getId());
+                        meeting.setName(response.body().getName());
+                        getSupportActionBar().setTitle(response.body().getName());
+                        meeting.setAdmin(response.body().getAdmin());
+                        meeting.addAllUsers(response.body().getUsers());
+                    }else{
+                        getMeeting(id);
+                    }
                 }else{
                     Toast.makeText(MeetingActivity.this,"error",Toast.LENGTH_SHORT).show();
                 }

@@ -45,11 +45,12 @@ public class User{
     public void removeFriend(User user){
         friends.remove(user);
     }
-    public void addAllFriends(List<User> friends){
+    public List<User> addAllFriends(List<User> friends){
         for (User user:friends){
             if (!this.friends.equals(user)){
                 this.friends.add(user);
             }
         }
+        return this.friends;
     }
 }

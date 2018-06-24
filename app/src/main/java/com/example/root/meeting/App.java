@@ -16,7 +16,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
                 retrofit = new Retrofit.Builder()
-                        .baseUrl("http://192.168.2.245:8080/")
+                        .baseUrl("http://192.168.42.41:8080/")
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();
                 api = retrofit.create(Api.class);

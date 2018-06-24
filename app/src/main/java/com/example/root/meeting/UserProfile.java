@@ -33,8 +33,6 @@ public class UserProfile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_acivity);
         getUser();
-        getFriends();
-        ((TextView)findViewById(R.id.userNameProfile)).setText(user.getUsername());
         ListView listView = (ListView) findViewById(R.id.friends_list);
         adapter= new ArrayAdapter<User>(this,android.R.layout.simple_list_item_1,friends){
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -51,7 +49,13 @@ public class UserProfile extends AppCompatActivity {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful()){
-                    user = response.body();
+                    if (response.body()!=null) {
+                        user = response.body();
+                        ((TextView) findViewById(R.id.userNameProfile)).setText(user.getUsername());
+                        getFriends();
+                    }else{
+                        getUser();
+                    }
                 }else{
                     Toast.makeText(UserProfile.this,"error",Toast.LENGTH_SHORT).show();
                 }
@@ -68,7 +72,9 @@ public class UserProfile extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                 if (response.isSuccessful()) {
-                    user.addAllFriends(response.body());
+                    friends.clear();
+                    friends.addAll(user.addAllFriends(response.body()));
+                    adapter.notifyDataSetChanged();
                 }else{
                     Toast.makeText(UserProfile.this,"error",Toast.LENGTH_SHORT).show();
                 }
@@ -82,7 +88,6 @@ public class UserProfile extends AppCompatActivity {
     }
     public void update(View view){
         getUser();
-        getFriends();
         adapter.notifyDataSetChanged();
     }
 }
