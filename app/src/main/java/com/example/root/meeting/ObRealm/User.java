@@ -9,7 +9,7 @@ import java.util.List;
  */
 
 public class User{
-    private int id;
+    private String id;
     private String username;
     private String role;
     private List<User> friends =new ArrayList<>();
@@ -20,11 +20,11 @@ public class User{
     public void setUsername(String username){
         this.username=username;
     }
-    public int getId(){
+    public String getId(){
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

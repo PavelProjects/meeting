@@ -71,7 +71,7 @@ public class MeetingActivity extends AppCompatActivity {
         startActivity(new Intent(MeetingActivity.this,AddUser.class).putExtra("id",pid));
         finish();
     }
-    private void deleteUser(int uid){
+    private void deleteUser(String uid){
         App.getApi().deleteUserFromMeeting(MainActivity.getAuthToken(),pid,uid).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

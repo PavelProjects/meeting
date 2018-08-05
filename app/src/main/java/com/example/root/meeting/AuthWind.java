@@ -78,7 +78,7 @@ public class AuthWind extends AppCompatActivity {
             public void onResponse(Call<User> call, Response<User> response) {
                 code = response.code();
                 editor = userKeys.edit();
-                editor.putInt("id",response.body().getId());
+                editor.putString("id",response.body().getId());
                 editor.apply();
             }
 

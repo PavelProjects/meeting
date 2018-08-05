@@ -1,4 +1,4 @@
-package com.example.root.meeting;
+package com.example.root.meeting.apis;
 
 import com.example.root.meeting.ObRealm.Meeting;
 import com.example.root.meeting.ObRealm.User;
@@ -29,7 +29,7 @@ public interface Api {
     @GET("/crud-1.0.0-SNAPSHOT/users/")
     Call<List<User>> getUsers(@Header("Authorization") String authkey);
     @GET("/crud-1.0.0-SNAPSHOT/users/{id}")
-    Call<List<User>> getUserById(@Header("Authorization") String authkey, @Path("id") int id);
+    Call<List<User>> getUserById(@Header("Authorization") String authkey, @Path("id") String id);
 
     @POST("/crud-1.0.0-SNAPSHOT/meeting")
     Call<Meeting> createMeeting(@Header("Authorization") String authkey,@Body Meeting meeting);
@@ -38,9 +38,9 @@ public interface Api {
     @GET("/crud-1.0.0-SNAPSHOT/meeting/{id}")
     Call<Meeting> getMeeting(@Header("Authorization") String authkey, @Path("id") int id);
     @POST("/crud-1.0.0-SNAPSHOT/meeting/{id}/{uid}")
-    Call<ResponseBody> addUserToMeeting(@Header("Authorization") String authkey,@Path("id") int id,@Path("uid") int uid);
+    Call<ResponseBody> addUserToMeeting(@Header("Authorization") String authkey,@Path("id") int id,@Path("uid") String uid);
     @GET("/crud-1.0.0-SNAPSHOT/users/fname/{name}")
     Call<List<User>> getUserByName(@Header("Authorization") String authkey, @Path("name") String name);
     @DELETE("/crud-1.0.0-SNAPSHOT/meeting/{id}/{uid}")
-    Call<ResponseBody> deleteUserFromMeeting(@Header("Authorization") String authkey,@Path("id") int id,@Path("uid") int uid);
+    Call<ResponseBody> deleteUserFromMeeting(@Header("Authorization") String authkey,@Path("id") int id,@Path("uid") String uid);
 }

@@ -84,7 +84,7 @@ public class AddUser extends AppCompatActivity {
             }
         });
     }
-    private void addUser(int pid,int uid){
+    private void addUser(int pid,String uid){
         App.getApi().addUserToMeeting(MainActivity.getAuthToken(),pid,uid).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

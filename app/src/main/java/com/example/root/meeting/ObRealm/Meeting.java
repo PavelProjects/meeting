@@ -10,7 +10,7 @@ import java.util.List;
 public class Meeting{
     private int id;
     private String name;
-    private int admin;
+    private String admin;
     private List<User> users= new ArrayList<>();
 
     public void setId(int id) {
@@ -21,11 +21,11 @@ public class Meeting{
         return id;
     }
 
-    public int getAdmin() {
+    public String getAdmin() {
         return admin;
     }
 
-    public void setAdmin(int admin) {
+    public void setAdmin(String admin) {
         this.admin = admin;
     }
 
