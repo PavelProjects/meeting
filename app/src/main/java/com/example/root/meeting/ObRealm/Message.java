@@ -5,49 +5,42 @@ package com.example.root.meeting.ObRealm;
  */
 
 public class Message {
-    private int id;
-    private String fu_id;
-    private String su_id;
-    private String body;
-    private String title;
+    private Data data;
+    private String to;
 
-    public int getId() {
-        return id;
+    public String getTo() {
+        return to;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setTo(String to) {
+        this.to = to;
+    }
+    public Data getData(){
+        return data;
     }
 
-    public String getBody() {
-        return body;
+    public void setData(Data data) {
+        this.data = data;
     }
 
-    public String getFu_id() {
-        return fu_id;
-    }
+    public static class Data{
+        private String message;
+        private String f;
 
-    public String getSu_id() {
-        return su_id;
-    }
+        public String getMessage() {
+            return message;
+        }
 
-    public String getTitle() {
-        return title;
-    }
+        public void setMessage(String message) {
+            this.message = message;
+        }
 
-    public void setBody(String body) {
-        this.body = body;
-    }
+        public String getFrom() {
+            return f;
+        }
 
-    public void setFu_id(String fu_id) {
-        this.fu_id = fu_id;
-    }
-
-    public void setSu_id(String su_id) {
-        this.su_id = su_id;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+        public void setFrom(String from) {
+            this.f = from;
+        }
     }
 }

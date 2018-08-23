@@ -10,15 +10,17 @@ import java.util.List;
 
 public class User{
     private String id;
-    private String username;
+    private String name;
+    private String password;
     private String role;
+    private String mail;
     private List<User> friends =new ArrayList<>();
 
     public String getUsername(){
-        return username;
+        return name;
     }
-    public void setUsername(String username){
-        this.username=username;
+    public void setUsername(String name){
+        this.name=name;
     }
     public String getId(){
         return id;
@@ -34,6 +36,14 @@ public class User{
 
     public String getUserrole() {
         return role;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 
     public List<User> getFriends(){
@@ -52,5 +62,8 @@ public class User{
             }
         }
         return this.friends;
+    }
+    public void setPassword(String password){
+        this.password=password;
     }
 }

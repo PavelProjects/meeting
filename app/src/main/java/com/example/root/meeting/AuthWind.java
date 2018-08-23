@@ -51,6 +51,7 @@ public class AuthWind extends AppCompatActivity {
                 editor.putString("username", username);
                 editor.putString("password", password);
                 editor.apply();
+                Toast.makeText(AuthWind.this,"Sucsess",Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(AuthWind.this, MainActivity.class));
                 this.finish();
             }else if (code==401){
@@ -87,5 +88,8 @@ public class AuthWind extends AppCompatActivity {
                 Toast.makeText(AuthWind.this, "error " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    public void createAccount (View view){
+        startActivity(new Intent(AuthWind.this,RegistrationActivity.class));
     }
 }

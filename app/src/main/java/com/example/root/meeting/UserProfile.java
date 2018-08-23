@@ -44,6 +44,9 @@ public class UserProfile extends AppCompatActivity {
         };
         listView.setAdapter(adapter);
     }
+    public void addFriends(View view){
+        //App.getApi().
+    }
     private void getUser(){
         App.getApi().authUser(MainActivity.getAuthToken()).enqueue(new Callback<User>() {
             @Override
@@ -72,9 +75,11 @@ public class UserProfile extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                 if (response.isSuccessful()) {
-                    friends.clear();
-                    friends.addAll(user.addAllFriends(response.body()));
-                    adapter.notifyDataSetChanged();
+                    if (response.body()!=null) {
+                        friends.clear();
+                        friends.addAll(user.addAllFriends(response.body()));
+                        adapter.notifyDataSetChanged();
+                    }
                 }else{
                     Toast.makeText(UserProfile.this,"error",Toast.LENGTH_SHORT).show();
                 }

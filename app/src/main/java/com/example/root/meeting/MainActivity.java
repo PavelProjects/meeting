@@ -2,8 +2,6 @@ package com.example.root.meeting;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
-import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,27 +16,17 @@ import android.widget.Toast;
 
 import com.example.root.meeting.ObRealm.User;
 import com.example.root.meeting.Services.FirebaseService;
-import com.example.root.meeting.apis.FirebaseApi;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
     private SharedPreferences userKey;
@@ -46,20 +34,19 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences.Editor editor;
     private List<User> users = new ArrayList<User>();
     private ArrayAdapter<User> adapter;
+    private int code;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d("fLog", "TOKEN: " + refreshedToken);
+        setContentView(R.layout.activity_main);
 
         startService(new Intent(MainActivity.this,FirebaseService.class));
         startService(new Intent(MainActivity.this, FirebaseMessagingService.class));
-        setContentView(R.layout.activity_main);
         userKey=getSharedPreferences("UserKeys",MODE_PRIVATE);
         userNp=userKey.getString("username","")+":"+userKey.getString("password","");
 
-        //checkAuth();
+        checkAuth();
+
         ListView lvMain = (ListView) findViewById(R.id.userslist);
         adapter = new ArrayAdapter<User>(this,
                 android.R.layout.two_line_list_item,android.R.id.text1,users){
@@ -102,8 +89,6 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this,"bad auth values",Toast.LENGTH_SHORT).show();
                         finish();
                     }
-                } else {
-                    Toast.makeText(MainActivity.this,"internet problems",Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -125,25 +110,17 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(MainActivity.this,StartMeetingActivity.class));
     }
     public void userProfile(View view){
-        startActivity(new Intent(MainActivity.this,UserProfile.class).putExtra("id",userKey.getInt("id",0)));
+        startActivity(new Intent(MainActivity.this,UserProfile.class).putExtra("id",userKey.getString("id","")));
     }
     public void userExit(View view) throws IOException {
-//        editor=userKey.edit();
-//        editor.putString("username",null);
-//        editor.putString("password",null);
-//        editor.apply();
-//        finish();
-        String message ="{\n" +
-                "  \"message\":{\n" +
-                "    \"token\" : \"eBruGurMoBE:APA91bEuvMg0DWM9xAXgm20X9wUXQe6bqq-Ml7jhsdct02GStyZiIMLYKR9DyPV9JDm2eIic_yhwk1d-xrXGVv4kALj0PX4vZt9_3HioCUOqQLG7ZF8DzpYUCZxqPBguejlRzsOEh48T1aWThRkIINbFWwggepJWnQ\",\n" +
-                "    \"notification\" : {\n" +
-                "      \"body\" : \"This is an FCM notification message!\",\n" +
-                "      \"title\" : \"FCM Message\",\n" +
-                "      }\n" +
-                "   }\n" +
-                "}";
-
-        
+        editor=userKey.edit();
+        editor.putString("username",null);
+        editor.putString("password",null);
+        editor.apply();
+        finish();
+    }
+    public void sendMessage(View view){
+        startActivity(new Intent(MainActivity.this,MessagingActivity.class));
     }
 
     @Override

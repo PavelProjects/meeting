@@ -9,6 +9,11 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath false
+            }
+        }
     }
     buildTypes {
         release {
@@ -37,7 +42,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:16.0.1'
     implementation 'com.google.firebase:firebase-analytics:16.0.1'
     implementation 'com.google.firebase:firebase-messaging:17.1.0'
-
     compile 'com.google.api-client:google-api-client:1.23.0'
 }
 apply plugin: 'com.google.gms.google-services'

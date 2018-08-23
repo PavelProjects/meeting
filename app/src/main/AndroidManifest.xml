@@ -26,6 +26,8 @@
         <activity android:name=".AddUser"></activity>
         <activity android:name=".UserProfile"></activity>
         <activity android:name=".CreateMeeting"></activity>
+        <activity android:name=".RegistrationActivity"></activity>
+        <activity android:name=".MessagingActivity"></activity>
 
         <service android:name=".Services.FirebaseService">
             <intent-filter>
