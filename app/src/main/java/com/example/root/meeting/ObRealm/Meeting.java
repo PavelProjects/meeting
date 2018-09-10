@@ -1,17 +1,27 @@
 package com.example.root.meeting.ObRealm;
 
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by root on 08.04.18.
  */
 
 public class Meeting{
+    @PrimaryKey
     private int id;
     private String name;
     private String admin;
-    private List<User> users= new ArrayList<>();
+    private RealmList<User> users= new RealmList<>();
+    private Date date;
+    private String time;
+    private String adress;
 
     public void setId(int id) {
         this.id = id;
@@ -49,5 +59,29 @@ public class Meeting{
                 users.add(ur);
             }
         }
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public String getAdress() {
+        return adress;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setAdress(String adress) {
+        this.adress = adress;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }

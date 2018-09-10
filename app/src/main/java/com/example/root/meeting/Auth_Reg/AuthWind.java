@@ -1,4 +1,4 @@
-package com.example.root.meeting;
+package com.example.root.meeting.Auth_Reg;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,7 +10,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.root.meeting.MainActivity;
 import com.example.root.meeting.ObRealm.User;
+import com.example.root.meeting.R;
+import com.example.root.meeting.apis.App;
 
 import java.io.UnsupportedEncodingException;
 import retrofit2.Call;
@@ -80,6 +83,7 @@ public class AuthWind extends AppCompatActivity {
                 code = response.code();
                 editor = userKeys.edit();
                 editor.putString("id",response.body().getId());
+                editor.putString("mail",response.body().getMail());
                 editor.apply();
             }
 

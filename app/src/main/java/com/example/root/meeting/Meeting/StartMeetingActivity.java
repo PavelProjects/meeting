@@ -1,4 +1,4 @@
-package com.example.root.meeting;
+package com.example.root.meeting.Meeting;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,10 +11,19 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.root.meeting.Auth_Reg.AuthWind;
+import com.example.root.meeting.MainActivity;
 import com.example.root.meeting.ObRealm.Meeting;
+import com.example.root.meeting.R;
+import com.example.root.meeting.apis.App;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -24,13 +33,12 @@ import retrofit2.Response;
  */
 
 public class StartMeetingActivity extends AppCompatActivity{
-    private List<Meeting> meetings = new ArrayList<>();
+    private ArrayList<Meeting> meetings = new ArrayList<>();
     private ArrayAdapter<Meeting> adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_meeting);
-
         ListView lvMain = (ListView) findViewById(R.id.meeting);
         adapter = new ArrayAdapter<Meeting>(this,
                 android.R.layout.simple_list_item_2,android.R.id.text1, meetings){
@@ -62,8 +70,8 @@ public class StartMeetingActivity extends AppCompatActivity{
             public void onResponse(Call<List<Meeting>> call, Response<List<Meeting>> response) {
                 if (response.body() != null) {
                     if (response.code()==200) {
-                        meetings.clear();
-                        meetings.addAll(response.body());
+                            meetings.clear();
+                            meetings.addAll(response.body());
                         adapter.notifyDataSetChanged();
                     }
                 }else if (response.code()==401){

@@ -1,9 +1,9 @@
-package com.example.root.meeting;
+package com.example.root.meeting.Profile;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -11,7 +11,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.root.meeting.MainActivity;
 import com.example.root.meeting.ObRealm.User;
+import com.example.root.meeting.R;
+import com.example.root.meeting.apis.App;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +48,19 @@ public class UserProfile extends AppCompatActivity {
         listView.setAdapter(adapter);
     }
     public void addFriends(View view){
-        //App.getApi().
+        startActivityForResult(new Intent(this,addFiend.class),1);
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode==1){
+            if (data.getBooleanExtra("flag",true)){
+                getFriends();
+            }
+        }
+    }
+
     private void getUser(){
         App.getApi().authUser(MainActivity.getAuthToken()).enqueue(new Callback<User>() {
             @Override

@@ -1,10 +1,12 @@
 package com.example.root.meeting.ObRealm;
 
+import io.realm.RealmObject;
+
 /**
  * Created by root on 23.07.18.
  */
 
-public class Message {
+public class Message{
     private Data data;
     private String to;
 
@@ -39,8 +41,8 @@ public class Message {
             return f;
         }
 
-        public void setFrom(String from) {
-            this.f = from;
+        public void setFrom(String f) {
+            this.f = f;
         }
     }
 }

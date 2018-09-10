@@ -16,6 +16,7 @@ import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 /**
@@ -27,13 +28,18 @@ public interface Api {
     Call<User> authUser(@Header("Authorization") String authkey);
     @GET("/crud-1.0.0-SNAPSHOT/profile/friends")
     Call<List<User>> getFriends(@Header("Authorization") String authkey);
+    @POST("/crud-1.0.0-SNAPSHOT/profile/friends/add")
+    Call<ResponseBody> addFriend(@Header("Authorization") String authKey,@Body User user);
+
     @GET("/crud-1.0.0-SNAPSHOT/users/")
     Call<List<User>> getUsers(@Header("Authorization") String authkey);
     @GET("/crud-1.0.0-SNAPSHOT/users/{id}")
     Call<List<User>> getUserById(@Header("Authorization") String authkey, @Path("id") String id);
 
     @POST("/crud-1.0.0-SNAPSHOT/meeting")
-    Call<Meeting> createMeeting(@Header("Authorization") String authkey,@Body Meeting meeting);
+    Call<Integer> createMeeting(@Header("Authorization") String authkey,@Body Meeting meeting);
+    @PUT("/crud-1.0.0-SNAPSHOT/meeting/{id}")
+    Call<ResponseBody> updateMeeting(@Header("Authorization") String authkey,@Path("id") int id,@Body Meeting meeting);
     @GET("/crud-1.0.0-SNAPSHOT/meeting")
     Call<List<Meeting>> getAllMeetings(@Header("Authorization") String authkey);
     @GET("/crud-1.0.0-SNAPSHOT/meeting/{id}")
@@ -50,4 +56,6 @@ public interface Api {
 
     @POST("/crud-1.0.0-SNAPSHOT/messaging/send")
     Call<ResponseBody> sendMessage(@Header("Authorization") String authkey, @Body Message message);
+    @POST("/crud-1.0.0-SNAPSHOT/messaging/token")
+    Call<ResponseBody> updateToken(@Header("Authorization") String authkey, String token);
 }

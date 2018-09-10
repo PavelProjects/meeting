@@ -4,6 +4,10 @@ package com.example.root.meeting.ObRealm;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmObject;
+
 /**
  * Created by root on 01.04.18.
  */
@@ -14,7 +18,7 @@ public class User{
     private String password;
     private String role;
     private String mail;
-    private List<User> friends =new ArrayList<>();
+    private RealmList<User> friends =new RealmList<>();
 
     public String getUsername(){
         return name;

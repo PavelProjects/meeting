@@ -4,9 +4,10 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
-        android:name=".App"
+        android:name=".apis.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -20,14 +21,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AuthWind"></activity>
-        <activity android:name=".StartMeetingActivity"></activity>
-        <activity android:name=".MeetingActivity"></activity>
-        <activity android:name=".AddUser"></activity>
-        <activity android:name=".UserProfile"></activity>
-        <activity android:name=".CreateMeeting"></activity>
-        <activity android:name=".RegistrationActivity"></activity>
-        <activity android:name=".MessagingActivity"></activity>
+        <activity android:name=".Auth_Reg.AuthWind"></activity>
+        <activity android:name=".Meeting.StartMeetingActivity"></activity>
+        <activity android:name=".Meeting.MeetingActivity"></activity>
+        <activity android:name=".Meeting.AddUserToMeeting"></activity>
+        <activity android:name=".Profile.UserProfile"></activity>
+        <activity android:name=".Meeting.CreateMeeting"></activity>
+        <activity android:name=".Auth_Reg.RegistrationActivity"></activity>
+        <activity android:name=".Profile.addFiend"></activity>
 
         <service android:name=".Services.FirebaseService">
             <intent-filter>

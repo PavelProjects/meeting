@@ -14,8 +14,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.root.meeting.Auth_Reg.AuthWind;
+import com.example.root.meeting.Meeting.StartMeetingActivity;
 import com.example.root.meeting.ObRealm.User;
+import com.example.root.meeting.Profile.UserProfile;
 import com.example.root.meeting.Services.FirebaseService;
+import com.example.root.meeting.apis.App;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
 
@@ -34,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences.Editor editor;
     private List<User> users = new ArrayList<User>();
     private ArrayAdapter<User> adapter;
-    private int code;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void checkAuth(){
         if (userNp!=null){
-            if (userNp.length()<=2) {
+            if (userNp.length()<=2) {https://vk.com/lirik_5
                 startActivity(new Intent(MainActivity.this, AuthWind.class));
             }
         }
@@ -119,9 +123,6 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
         finish();
     }
-    public void sendMessage(View view){
-        startActivity(new Intent(MainActivity.this,MessagingActivity.class));
-    }
 
     @Override
     protected void onDestroy() {
@@ -129,4 +130,5 @@ public class MainActivity extends AppCompatActivity {
         stopService(new Intent(MainActivity.this,FirebaseService.class));
         stopService(new Intent(MainActivity.this,FirebaseMessagingService.class));
     }
+
 }
