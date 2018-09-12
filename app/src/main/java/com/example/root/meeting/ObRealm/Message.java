@@ -1,12 +1,14 @@
 package com.example.root.meeting.ObRealm;
 
+import java.io.Serializable;
+
 import io.realm.RealmObject;
 
 /**
  * Created by root on 23.07.18.
  */
 
-public class Message{
+public class Message implements Serializable{
     private Data data;
     private String to;
 

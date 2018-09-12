@@ -4,13 +4,10 @@ import com.example.root.meeting.ObRealm.Meeting;
 import com.example.root.meeting.ObRealm.Message;
 import com.example.root.meeting.ObRealm.User;
 
-import org.json.JSONArray;
-
 import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;

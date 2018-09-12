@@ -8,13 +8,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,12 +21,11 @@ import com.example.root.meeting.ObRealm.Meeting;
 import com.example.root.meeting.ObRealm.User;
 import com.example.root.meeting.R;
 import com.example.root.meeting.apis.App;
+import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.realm.Realm;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,11 +34,11 @@ import retrofit2.Response;
 public class MeetingActivity extends AppCompatActivity {
     private List<User> users  = new ArrayList<>();
     private ArrayAdapter<User> adapter;
-    Meeting meeting = new Meeting();
+    Meeting meeting =  new Meeting();
     private int pid = 0;
     public static String ACTION_UPDATE = "update";
     private MeetReceiver meetReceiver;
-    private Handler handler =new Handler();
+    Gson gson = new Gson();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,11 +46,13 @@ public class MeetingActivity extends AppCompatActivity {
         setContentView(R.layout.meeting_activity);
 
         Intent intent = getIntent();
-        pid = intent.getIntExtra("id",pid);
+        meeting = gson.fromJson(intent.getStringExtra("meeting"),Meeting.class);
+        pid = meeting.getId();
         if (pid==0){
             finish();
         }
-        getMeeting(pid);
+        ((TextView) findViewById(R.id.meetingTimeDate)).setText(String.valueOf(meeting.getDate()) + ":" + meeting.getTime());
+        ((TextView) findViewById(R.id.meetingAddress)).setText(meeting.getAdress());
         users = meeting.getUsers();
         ListView lvMain = (ListView) findViewById(R.id.members_list);
         adapter = new ArrayAdapter<User>(this,
@@ -112,13 +111,10 @@ public class MeetingActivity extends AppCompatActivity {
                 public void onResponse(Call<Meeting> call, Response<Meeting> response) {
                     if (response.isSuccessful()) {
                         if (response.body() != null) {
-                            meeting.setId(response.body().getId());
                             meeting.setName(response.body().getName());
-                            meeting.setAdress(response.body().getAdress());
                             meeting.setDate(response.body().getDate());
                             meeting.setTime(response.body().getTime());
-                            meeting.setAdmin(response.body().getAdmin());
-                            meeting.addAllUsers(response.body().getUsers());
+                            meeting.setAdress(response.body().getAdress());
                         } else {
                             getMeeting(id);
                         }
@@ -132,9 +128,18 @@ public class MeetingActivity extends AppCompatActivity {
                     Toast.makeText(MeetingActivity.this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
+    }
+    private void update(){
+        getMeeting(pid);
+        if (meeting!=null) {
             getSupportActionBar().setTitle(meeting.getName());
             ((TextView) findViewById(R.id.meetingTimeDate)).setText(String.valueOf(meeting.getDate()) + ":" + meeting.getTime());
             ((TextView) findViewById(R.id.meetingAddress)).setText(meeting.getAdress());
+            users = meeting.getUsers();
+            adapter.notifyDataSetChanged();
+        }else{
+            finish();
+        }
     }
 
     private class MeetReceiver extends BroadcastReceiver {
@@ -146,9 +151,7 @@ public class MeetingActivity extends AppCompatActivity {
 
     }
     public void updateMeetingData (View view){
-        getMeeting(pid);
-        users = meeting.getUsers();
-        adapter.notifyDataSetChanged();
+        update();
     }
 
     @Override

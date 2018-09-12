@@ -16,8 +16,10 @@ import com.example.root.meeting.MainActivity;
 import com.example.root.meeting.ObRealm.Meeting;
 import com.example.root.meeting.R;
 import com.example.root.meeting.apis.App;
+import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +37,7 @@ import retrofit2.Response;
 public class StartMeetingActivity extends AppCompatActivity{
     private ArrayList<Meeting> meetings = new ArrayList<>();
     private ArrayAdapter<Meeting> adapter;
+    Gson gson =new Gson();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +58,7 @@ public class StartMeetingActivity extends AppCompatActivity{
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Intent intent = new Intent(StartMeetingActivity.this,MeetingActivity.class);
-                intent.putExtra("id",meetings.get(position).getId());
+                intent.putExtra("meeting", gson.toJson(meetings.get(position)));
                 startActivity(intent);
             }
         });

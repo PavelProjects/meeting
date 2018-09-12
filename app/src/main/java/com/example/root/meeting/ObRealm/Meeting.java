@@ -1,5 +1,8 @@
 package com.example.root.meeting.ObRealm;
 
+import com.google.gson.annotations.SerializedName;
+
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,12 +16,12 @@ import io.realm.annotations.PrimaryKey;
  * Created by root on 08.04.18.
  */
 
-public class Meeting{
-    @PrimaryKey
+public class Meeting implements Serializable{
     private int id;
     private String name;
     private String admin;
-    private RealmList<User> users= new RealmList<>();
+    private ArrayList<User> users= new ArrayList<>();
+    @SerializedName("date")
     private Date date;
     private String time;
     private String adress;

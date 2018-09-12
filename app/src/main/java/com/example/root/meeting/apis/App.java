@@ -13,13 +13,14 @@ public class App extends Application {
     private Retrofit retrofit;
     private static String adress_mai="http://172.31.66.61:8080/";
     private static String adress_phone="http://192.168.43.246:8080/";
+    private static String adress_phone_2 = "http://192.168.43.246:8080/";
     private static String adress_home = "http://192.168.2.98:8080/";
 
     @Override
     public void onCreate() {
         super.onCreate();
         retrofit = new Retrofit.Builder()
-                .baseUrl(adress_home)
+                .baseUrl(adress_mai)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
                 api = retrofit.create(Api.class);

@@ -1,6 +1,7 @@
 package com.example.root.meeting.ObRealm;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import io.realm.RealmObject;
  * Created by root on 01.04.18.
  */
 
-public class User{
+public class User implements Serializable {
     private String id;
     private String name;
     private String password;
