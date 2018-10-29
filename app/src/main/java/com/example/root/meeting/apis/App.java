@@ -20,7 +20,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         retrofit = new Retrofit.Builder()
-                .baseUrl(adress_mai)
+                .baseUrl(adress_home)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
                 api = retrofit.create(Api.class);

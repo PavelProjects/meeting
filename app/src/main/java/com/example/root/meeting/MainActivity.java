@@ -2,11 +2,16 @@ package com.example.root.meeting;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -18,7 +23,6 @@ import com.example.root.meeting.Auth_Reg.AuthWind;
 import com.example.root.meeting.Meeting.StartMeetingActivity;
 import com.example.root.meeting.ObRealm.User;
 import com.example.root.meeting.Profile.UserProfile;
-import com.example.root.meeting.Services.FirebaseService;
 import com.example.root.meeting.apis.App;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -28,6 +32,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,14 +42,19 @@ public class MainActivity extends AppCompatActivity {
     private static String userNp;
     private SharedPreferences.Editor editor;
     private List<User> users = new ArrayList<User>();
+    boolean flag = false;
     private ArrayAdapter<User> adapter;
+    private static String token = FirebaseInstanceId.getInstance().getToken();
+    private Toolbar toolbar;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        toolbar = (Toolbar)findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
 
-        startService(new Intent(MainActivity.this,FirebaseService.class));
         startService(new Intent(MainActivity.this, FirebaseMessagingService.class));
         userKey=getSharedPreferences("UserKeys",MODE_PRIVATE);
         userNp=userKey.getString("username","")+":"+userKey.getString("password","");
@@ -64,10 +74,67 @@ public class MainActivity extends AppCompatActivity {
         };
         lvMain.setAdapter(adapter);
         updateData();
+        //checkToken();
     }
 
-    public void getData(View view) {
-        updateData();
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.update_button,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_update: updateData();
+            return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void checkToken(){
+        flag=false;
+        if (token!=null) {
+            App.getApi().authUser(MainActivity.getAuthToken()).enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    if (response.isSuccessful()) {
+                        if (response.body() != null) {
+                            if (response.body().getId().equals(token)) {
+                                flag = true;
+                            } else {
+                                flag = false;
+                            }
+                        }
+                    } else {
+                        Toast.makeText(MainActivity.this, "error", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<User> call, Throwable t) {
+                    Toast.makeText(MainActivity.this, "error " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+            if (!flag) {
+                App.getApi().updateToken(getAuthToken(), token).enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                    }
+                });
+                editor = userKey.edit();
+                editor.putString("id", token);
+                editor.apply();
+                Toast.makeText(this, "updated", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @NonNull
@@ -85,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                 if (response.body() != null) {
-                    if (response.code()==200) {
+                    if (response.isSuccessful()) {
                         users.clear();
                         users.addAll(response.body());
                         adapter.notifyDataSetChanged();
@@ -105,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void checkAuth(){
         if (userNp!=null){
-            if (userNp.length()<=2) {https://vk.com/lirik_5
+            if (userNp.length()<=2) {
                 startActivity(new Intent(MainActivity.this, AuthWind.class));
             }
         }
@@ -127,7 +194,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopService(new Intent(MainActivity.this,FirebaseService.class));
         stopService(new Intent(MainActivity.this,FirebaseMessagingService.class));
     }
 

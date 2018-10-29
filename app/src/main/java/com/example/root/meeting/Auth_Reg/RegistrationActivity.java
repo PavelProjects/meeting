@@ -56,7 +56,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 public void onResponse(Call<User> call, Response<User> response) {
                     if (response.isSuccessful()) {
                         Toast.makeText(RegistrationActivity.this, "created " + response.body().getUsername(), Toast.LENGTH_SHORT).show();
-                        code = response.code();
+                        RegistrationActivity.this.finish();
                     }
                 }
 
@@ -65,11 +65,6 @@ public class RegistrationActivity extends AppCompatActivity {
                     Toast.makeText(RegistrationActivity.this, "fail" + t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
-            if (code == 201) {
-                RegistrationActivity.this.finish();
-            }else{
-                Toast.makeText(this,"somthing go wrong",Toast.LENGTH_LONG).show();
-            }
         }else{
             Toast.makeText(this,"Не все поля заполнены",Toast.LENGTH_SHORT).show();
         }

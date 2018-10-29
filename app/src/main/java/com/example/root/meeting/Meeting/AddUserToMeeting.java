@@ -17,6 +17,7 @@ import com.example.root.meeting.MainActivity;
 import com.example.root.meeting.ObRealm.User;
 import com.example.root.meeting.R;
 import com.example.root.meeting.apis.App;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ import retrofit2.Response;
 public class AddUserToMeeting extends AppCompatActivity {
     private ArrayAdapter<User> adapter;
     private List<User> users = new ArrayList<>();
+    Gson gson =new Gson();
     int pid;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,12 +55,7 @@ public class AddUserToMeeting extends AppCompatActivity {
         lvMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                addUser(pid,users.get(position).getId());
-                Intent intent = new Intent(AddUserToMeeting.this,MeetingActivity.class);
-                intent.putExtra("flag","update");
-                intent.putExtra("id",pid);
-                startActivity(intent);
-                finish();
+                addUser(pid,users.get(position));
             }
         });
     }
@@ -87,12 +84,14 @@ public class AddUserToMeeting extends AppCompatActivity {
             }
         });
     }
-    private void addUser(int pid,String uid){
-        App.getApi().addUserToMeeting(MainActivity.getAuthToken(),pid,uid).enqueue(new Callback<ResponseBody>() {
+    private void addUser(int pid, final User user){
+        App.getApi().addUserToMeeting(MainActivity.getAuthToken(),pid,user).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.body() != null) {
-                    if (response.code()==200) {
+                    if (response.isSuccessful()) {
+                        setResult(RESULT_OK,new Intent().putExtra("user",gson.toJson(user)));
+                        finish();
                     }else if (response.code()==401){
                         Toast.makeText(AddUserToMeeting.this,"bad auth values",Toast.LENGTH_SHORT).show();
                         finish();

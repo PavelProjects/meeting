@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -31,10 +34,15 @@ public class UserProfile extends AppCompatActivity {
     private ArrayAdapter<User> adapter;
     private List<User> friends = new ArrayList<>();
     private User user;
+    private Toolbar toolbar;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_acivity);
+        toolbar = (Toolbar)findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
+
         getUser();
         ListView listView = (ListView) findViewById(R.id.friends_list);
         adapter= new ArrayAdapter<User>(this,android.R.layout.simple_list_item_1,friends){
@@ -50,7 +58,23 @@ public class UserProfile extends AppCompatActivity {
     public void addFriends(View view){
         startActivityForResult(new Intent(this,addFiend.class),1);
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.update_button,menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_update:
+                getUser();
+                adapter.notifyDataSetChanged();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -104,9 +128,5 @@ public class UserProfile extends AppCompatActivity {
                 Toast.makeText(UserProfile.this, "error " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-    }
-    public void update(View view){
-        getUser();
-        adapter.notifyDataSetChanged();
     }
 }

@@ -21,7 +21,6 @@ public class Meeting implements Serializable{
     private String name;
     private String admin;
     private ArrayList<User> users= new ArrayList<>();
-    @SerializedName("date")
     private Date date;
     private String time;
     private String adress;
@@ -57,11 +56,8 @@ public class Meeting implements Serializable{
         users.add(user);
     }
     public void addAllUsers(List<User> user){
-        for (User ur:user){
-            if (!users.equals(ur)){
-                users.add(ur);
-            }
-        }
+        users.clear();
+        users.addAll(user);
     }
 
     public Date getDate() {

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -13,6 +14,7 @@ import com.example.root.meeting.MainActivity;
 import com.example.root.meeting.ObRealm.Meeting;
 import com.example.root.meeting.R;
 import com.example.root.meeting.apis.App;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 
@@ -29,7 +31,8 @@ import retrofit2.Response;
 
 public class CreateMeeting extends AppCompatActivity {
     private int id;
-    private boolean flag;
+    private Gson gson = new Gson();
+
     SharedPreferences sharedPreferences;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,19 +46,19 @@ public class CreateMeeting extends AppCompatActivity {
         if (st != null && adr!=null) {
             if (st.length() > 0 && adr.length()>0) {
                 Meeting meeting = new Meeting();
-                //flag = false;
                 meeting.setName(st);
                 meeting.setAdress(adr);
                 meeting.setAdmin(sharedPreferences.getString("mail",""));
-                App.getApi().createMeeting(MainActivity.getAuthToken(), meeting).enqueue(new Callback<Integer>() {
+                Log.d("MeetingLogs",gson.toJson(meeting));
+                App.getApi().createMeeting(MainActivity.getAuthToken(), meeting).enqueue(new Callback<Meeting>() {
                     @Override
-                    public void onResponse(Call<Integer> call, Response<Integer> response) {
+                    public void onResponse(Call<Meeting> call, Response<Meeting> response) {
                         if (response.isSuccessful()) {
                             if (response.isSuccessful()) {
-                                id = response.body();
-                                flag = true;
-                                startActivity(new Intent(CreateMeeting.this, MeetingActivity.class).putExtra("id", id));
-                                finish();
+                                if (response.body()!=null) {
+                                    startActivity(new Intent(CreateMeeting.this, MeetingActivity.class).putExtra("meeting", gson.toJson(response.body())));
+                                    finish();
+                                }
                             }
                         }else{
                             Toast.makeText(CreateMeeting.this,"something gone wrong",Toast.LENGTH_SHORT).show();
@@ -63,17 +66,14 @@ public class CreateMeeting extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<Integer> call, Throwable t) {
+                    public void onFailure(Call<Meeting> call, Throwable t) {
                         Toast.makeText(CreateMeeting.this, "error" + t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        Log.d("CreateMeeting",t.getLocalizedMessage());
                     }
                 });
             } else {
                 Toast.makeText(this, "need name", Toast.LENGTH_SHORT).show();
             }
         }
-//        if (flag){
-//            startActivity(new Intent(CreateMeeting.this,MeetingActivity.class).putExtra("id", id));
-//            finish();
-//        }
     }
 }

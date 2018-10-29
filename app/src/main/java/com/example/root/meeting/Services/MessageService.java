@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.example.root.meeting.MainActivity;
 import com.example.root.meeting.Meeting.MeetingActivity;
+import com.example.root.meeting.ObRealm.Meeting;
 import com.example.root.meeting.ObRealm.User;
 import com.example.root.meeting.Profile.UserProfile;
 import com.example.root.meeting.R;
@@ -50,7 +51,7 @@ public class MessageService extends FirebaseMessagingService {
                         .setVibrate(new long[] { 1000, 100, 1000});
 
         if (remoteMessage.getData().get("event").equals("add_to_meeting")){
-            Intent resultIntent = new Intent(this,MeetingActivity.class).putExtra("id",remoteMessage.getData().get("info"));
+            Intent resultIntent = new Intent(this,MeetingActivity.class).putExtra("meeting",remoteMessage.getData().get("info"));
             PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
             builder.setContentInfo(remoteMessage.getData().get("info"));
@@ -73,9 +74,16 @@ public class MessageService extends FirebaseMessagingService {
         if (remoteMessage.getData().get("event").equals("update_meeting")){
             sendBroadcast(new Intent().setAction(MeetingActivity.ACTION_UPDATE));
         }
+        if (remoteMessage.getData().get("event").equals("message")){
+            builder.setContentText("message!");
+            Meeting meeting= new Gson().fromJson(remoteMessage.getData().get("meeting"),Meeting.class);
+            Intent intent =new Intent();
+            intent.putExtra("id",meeting.getId());
+            intent.putExtra("message",remoteMessage.getData().get("message"));
+            sendBroadcast(intent);
+        }
         if (id!=0) {
             Notification notification = builder.build();
-
             NotificationManager notificationManager =
                     (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             notificationManager.notify(id, notification);

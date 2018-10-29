@@ -34,18 +34,18 @@ public interface Api {
     Call<List<User>> getUserById(@Header("Authorization") String authkey, @Path("id") String id);
 
     @POST("/crud-1.0.0-SNAPSHOT/meeting")
-    Call<Integer> createMeeting(@Header("Authorization") String authkey,@Body Meeting meeting);
-    @PUT("/crud-1.0.0-SNAPSHOT/meeting/{id}")
-    Call<ResponseBody> updateMeeting(@Header("Authorization") String authkey,@Path("id") int id,@Body Meeting meeting);
+    Call<Meeting> createMeeting(@Header("Authorization") String authkey,@Body Meeting meeting);
+    @PUT("/crud-1.0.0-SNAPSHOT/meeting/update")
+    Call<ResponseBody> updateMeeting(@Header("Authorization") String authkey,@Body Meeting meeting);
     @GET("/crud-1.0.0-SNAPSHOT/meeting")
     Call<List<Meeting>> getAllMeetings(@Header("Authorization") String authkey);
     @GET("/crud-1.0.0-SNAPSHOT/meeting/{id}")
     Call<Meeting> getMeeting(@Header("Authorization") String authkey, @Path("id") int id);
-    @POST("/crud-1.0.0-SNAPSHOT/meeting/{id}/{uid}")
-    Call<ResponseBody> addUserToMeeting(@Header("Authorization") String authkey,@Path("id") int id,@Path("uid") String uid);
+    @POST("/crud-1.0.0-SNAPSHOT/meeting/{id}/add")
+    Call<ResponseBody> addUserToMeeting(@Header("Authorization") String authkey,@Path("id") int id,@Body User user);
     @GET("/crud-1.0.0-SNAPSHOT/users/fname/{name}")
     Call<List<User>> getUserByName(@Header("Authorization") String authkey, @Path("name") String name);
-    @DELETE("/crud-1.0.0-SNAPSHOT/meeting/{id}/{uid}")
+    @DELETE("/crud-1.0.0-SNAPSHOT/nmeeting/{id}/{uid}")
     Call<ResponseBody> deleteUserFromMeeting(@Header("Authorization") String authkey,@Path("id") int id,@Path("uid") String uid);
 
     @POST("/crud-1.0.0-SNAPSHOT/create")
@@ -53,6 +53,10 @@ public interface Api {
 
     @POST("/crud-1.0.0-SNAPSHOT/messaging/send")
     Call<ResponseBody> sendMessage(@Header("Authorization") String authkey, @Body Message message);
+    @GET("//crud-1.0.0-SNAPSHOT/messaging/{mid}")
+    Call<List<Message>> getMessages(@Header("Authorization") String authkey, @Path("mid") int mid);
+
+
     @POST("/crud-1.0.0-SNAPSHOT/messaging/token")
-    Call<ResponseBody> updateToken(@Header("Authorization") String authkey, String token);
+    Call<ResponseBody> updateToken(@Header("Authorization") String authkey,@Body String token);
 }

@@ -3,6 +3,8 @@ package com.example.root.meeting.Meeting;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -10,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.example.root.meeting.Auth_Reg.AuthWind;
 import com.example.root.meeting.MainActivity;
@@ -38,10 +41,15 @@ public class StartMeetingActivity extends AppCompatActivity{
     private ArrayList<Meeting> meetings = new ArrayList<>();
     private ArrayAdapter<Meeting> adapter;
     Gson gson =new Gson();
+    private android.support.v7.widget.Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_meeting);
+        toolbar = (android.support.v7.widget.Toolbar)findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
+
         ListView lvMain = (ListView) findViewById(R.id.meeting);
         adapter = new ArrayAdapter<Meeting>(this,
                 android.R.layout.simple_list_item_2,android.R.id.text1, meetings){
@@ -63,6 +71,22 @@ public class StartMeetingActivity extends AppCompatActivity{
             }
         });
         updateData();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.update_button,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_update: updateData();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
     public void createMeeting(View view){
         startActivity(new Intent(this,CreateMeeting.class));

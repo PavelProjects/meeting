@@ -29,12 +29,7 @@
         <activity android:name=".Meeting.CreateMeeting"></activity>
         <activity android:name=".Auth_Reg.RegistrationActivity"></activity>
         <activity android:name=".Profile.addFiend"></activity>
-
-        <service android:name=".Services.FirebaseService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-            </intent-filter>
-        </service>
+        <activity android:name=".Meeting.MeetingSettings" android:windowSoftInputMode="adjustNothing"></activity>
 
         <service android:name=".Services.MessageService">
             <intent-filter>
