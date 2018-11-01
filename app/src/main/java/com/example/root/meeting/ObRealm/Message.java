@@ -33,8 +33,16 @@ public class Message implements Serializable{
         private String f;
         private String event;
         private User user;
-        private Meeting meeting;
+        private int mid;
         private String info;
+
+        public int getMid() {
+            return mid;
+        }
+
+        public void setMid(int mid) {
+            this.mid = mid;
+        }
 
         public int getId() {
             return id;
@@ -66,14 +74,6 @@ public class Message implements Serializable{
 
         public void setUser(User user) {
             this.user = user;
-        }
-
-        public Meeting getMeeting() {
-            return meeting;
-        }
-
-        public void setMeeting(Meeting meeting) {
-            this.meeting = meeting;
         }
 
         public String getMessage() {

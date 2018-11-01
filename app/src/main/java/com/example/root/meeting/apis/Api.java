@@ -53,7 +53,7 @@ public interface Api {
 
     @POST("/crud-1.0.0-SNAPSHOT/messaging/send")
     Call<ResponseBody> sendMessage(@Header("Authorization") String authkey, @Body Message message);
-    @GET("//crud-1.0.0-SNAPSHOT/messaging/{mid}")
+    @GET("/crud-1.0.0-SNAPSHOT/messaging/{mid}")
     Call<List<Message>> getMessages(@Header("Authorization") String authkey, @Path("mid") int mid);
 
 

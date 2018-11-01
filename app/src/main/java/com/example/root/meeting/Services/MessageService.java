@@ -75,12 +75,14 @@ public class MessageService extends FirebaseMessagingService {
             sendBroadcast(new Intent().setAction(MeetingActivity.ACTION_UPDATE));
         }
         if (remoteMessage.getData().get("event").equals("message")){
-            builder.setContentText("message!");
-            Meeting meeting= new Gson().fromJson(remoteMessage.getData().get("meeting"),Meeting.class);
+            builder.setContentTitle("MESSAGE");
+            builder.setContentText(remoteMessage.getData().get("message"));
+            int mid= Integer.valueOf(remoteMessage.getData().get("mid"));
             Intent intent =new Intent();
-            intent.putExtra("id",meeting.getId());
+            intent.putExtra("id",mid);
             intent.putExtra("message",remoteMessage.getData().get("message"));
             sendBroadcast(intent);
+            id=3;
         }
         if (id!=0) {
             Notification notification = builder.build();

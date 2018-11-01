@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -44,6 +45,7 @@ public class MeetingActivity extends AppCompatActivity {
     private MeetReceiver meetReceiver;
     Gson gson = new Gson();
     private Toolbar toolbar;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,17 +68,18 @@ public class MeetingActivity extends AppCompatActivity {
         updateMessages();
         ListView lvMain = (ListView) findViewById(R.id.messages);
         adapter = new ArrayAdapter<Message>(this,
-                android.R.layout.simple_list_item_1,android.R.id.text1, messages){
+                android.R.layout.two_line_list_item,android.R.id.text1, messages){
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view = super.getView(position, convertView, parent);
                 final Message message = getItem(position);
                 ((TextView) view.findViewById(android.R.id.text1)).setText(message.getData().getMessage());
+                ((TextView) view.findViewById(android.R.id.text2)).setText(message.getData().getF());
                 return view;
             }
         };
         lvMain.setAdapter(adapter);
         update();
-        update();
+        sharedPreferences=getSharedPreferences("UserKeys",MODE_PRIVATE);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -89,6 +92,7 @@ public class MeetingActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.action_update: update();
                 return true;
+            case R.id.action_settings:startActivityForResult(new Intent(MeetingActivity.this,MeetingSettings.class).putExtra("meeting",gson.toJson(meeting)),3);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -134,7 +138,7 @@ public class MeetingActivity extends AppCompatActivity {
                 getSupportActionBar().setTitle(meeting.getName());
                 ((TextView) findViewById(R.id.meetingTimeDate)).setText(String.valueOf(meeting.getDate()) + ":" + meeting.getTime());
                 ((TextView) findViewById(R.id.meetingAddress)).setText(meeting.getAdress());
-
+                updateMessages();
                 adapter.notifyDataSetChanged();
             }else{
                 update();
@@ -152,16 +156,12 @@ public class MeetingActivity extends AppCompatActivity {
         }
     }
 
-    public void meetingSettings (View view){
-        startActivityForResult(new Intent(MeetingActivity.this,MeetingSettings.class).putExtra("meeting",gson.toJson(meeting)),3);
-    }
 
     private class MeetReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context arg0, Intent arg1) {
-            if (arg1.getIntExtra("id",pid)==pid){
-                Toast.makeText(MeetingActivity.this,"message!",Toast.LENGTH_SHORT).show();
-                Toast.makeText(MeetingActivity.this,arg1.getStringExtra("message"),Toast.LENGTH_LONG).show();
+            if (arg1.getIntExtra("id",0)==pid){
+
             }
             Toast.makeText(MeetingActivity.this,"update meeting",Toast.LENGTH_SHORT).show();
             update();
@@ -172,10 +172,11 @@ public class MeetingActivity extends AppCompatActivity {
     public void sendMessage(View view){
         String mes = ((EditText)findViewById(R.id.messageText)).getText().toString();
         if (mes.length()>0){
-            Message message =new Message();
+            final Message message =new Message();
             Message.Data data =new Message.Data();
-            data.setMeeting(meeting);
+            data.setF(sharedPreferences.getString("username",""));
             data.setMessage(mes);
+            data.setMid(meeting.getId());
             data.setEvent("message");
             message.setData(data);
             message.setTo("meeting");
@@ -185,6 +186,11 @@ public class MeetingActivity extends AppCompatActivity {
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.isSuccessful()){
                         Toast.makeText(MeetingActivity.this,"sande",Toast.LENGTH_SHORT).show();
+                        messages.add(messages.size(),message);
+                        adapter.notifyDataSetChanged();
+                        ((EditText)findViewById(R.id.messageText)).setText("");
+                    }else {
+                        Toast.makeText(MeetingActivity.this, "something gone wrong", Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -199,9 +205,11 @@ public class MeetingActivity extends AppCompatActivity {
         App.getApi().getMessages(MainActivity.getAuthToken(),meeting.getId()).enqueue(new Callback<List<Message>>() {
             @Override
             public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
-                if (response.isSuccessful()){
-                    messages.clear();
-                    messages.addAll(response.body());
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
+                        messages.clear();
+                        messages.addAll(response.body());
+                    }
                 }
             }
 

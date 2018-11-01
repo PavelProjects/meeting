@@ -2,8 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_update"
-        android:icon="@android:drawable/ic_menu_rotate"
-        android:title="@string/common_google_play_services_update_button"
+        android:id="@+id/action_settings"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:title="@string/settings"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/action_update"
+        android:icon="@android:drawable/stat_notify_sync"
+        android:title="@string/common_google_play_services_update_button"
+        app:showAsAction="ifRoom" />
 </menu>

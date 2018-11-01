@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         };
         lvMain.setAdapter(adapter);
         updateData();
-        //checkToken();
+        checkToken();
     }
 
     @Override
@@ -94,13 +94,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkToken(){
-        flag=false;
+        Log.d("fLog",token);
         if (token!=null) {
             App.getApi().authUser(MainActivity.getAuthToken()).enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
                     if (response.isSuccessful()) {
-                        if (response.body() != null) {
+                        if (response.body().getId() != null) {
                             if (response.body().getId().equals(token)) {
                                 flag = true;
                             } else {
