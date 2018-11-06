@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -21,9 +22,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.root.meeting.MainActivity;
+import com.example.root.meeting.ObRealm.MessagingData;
 import com.example.root.meeting.ObRealm.Meeting;
 import com.example.root.meeting.ObRealm.Message;
-import com.example.root.meeting.ObRealm.User;
 import com.example.root.meeting.R;
 import com.example.root.meeting.apis.App;
 import com.google.gson.Gson;
@@ -37,15 +38,17 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MeetingActivity extends AppCompatActivity {
-    private List<Message> messages = new ArrayList<>();
-    private ArrayAdapter<Message> adapter;
+    private List<MessagingData> messages = new ArrayList<>();
+    private ArrayAdapter<MessagingData> adapter;
     private Meeting meeting =  new Meeting();
     private int pid = 0;
     public static String ACTION_UPDATE = "update";
-    private MeetReceiver meetReceiver;
-    Gson gson = new Gson();
+    public static String ACTION_NEW_MESSAGE = "NEW_MESSAGE";
+    private Gson gson = new Gson();
+    private MeetReceiver meetReceiver = new MeetReceiver();
     private Toolbar toolbar;
     private SharedPreferences sharedPreferences;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,13 +70,13 @@ public class MeetingActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.meetingAddress)).setText(meeting.getAdress());
         updateMessages();
         ListView lvMain = (ListView) findViewById(R.id.messages);
-        adapter = new ArrayAdapter<Message>(this,
+        adapter = new ArrayAdapter<MessagingData>(this,
                 android.R.layout.two_line_list_item,android.R.id.text1, messages){
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view = super.getView(position, convertView, parent);
-                final Message message = getItem(position);
-                ((TextView) view.findViewById(android.R.id.text1)).setText(message.getData().getMessage());
-                ((TextView) view.findViewById(android.R.id.text2)).setText(message.getData().getF());
+                final MessagingData data = getItem(position);
+                ((TextView) view.findViewById(android.R.id.text1)).setText(data.getMessage());
+                ((TextView) view.findViewById(android.R.id.text2)).setText(data.getF());
                 return view;
             }
         };
@@ -89,21 +92,15 @@ public class MeetingActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.action_update: update();
+        switch (item.getItemId()) {
+            case R.id.action_update:
+                update();
                 return true;
-            case R.id.action_settings:startActivityForResult(new Intent(MeetingActivity.this,MeetingSettings.class).putExtra("meeting",gson.toJson(meeting)),3);
+            case R.id.action_settings:
+                startActivityForResult(new Intent(MeetingActivity.this, MeetingSettings.class).putExtra("meeting", gson.toJson(meeting)), 3);
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-    @Override
-    protected void onStart() {
-        super.onStart();
-        meetReceiver = new MeetReceiver();
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ACTION_UPDATE);
-        registerReceiver(meetReceiver,intentFilter);
     }
 
     public void getMeeting(final int id) {
@@ -157,23 +154,11 @@ public class MeetingActivity extends AppCompatActivity {
     }
 
 
-    private class MeetReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context arg0, Intent arg1) {
-            if (arg1.getIntExtra("id",0)==pid){
-
-            }
-            Toast.makeText(MeetingActivity.this,"update meeting",Toast.LENGTH_SHORT).show();
-            update();
-        }
-
-    }
-
     public void sendMessage(View view){
         String mes = ((EditText)findViewById(R.id.messageText)).getText().toString();
         if (mes.length()>0){
             final Message message =new Message();
-            Message.Data data =new Message.Data();
+            final MessagingData data =new MessagingData();
             data.setF(sharedPreferences.getString("username",""));
             data.setMessage(mes);
             data.setMid(meeting.getId());
@@ -186,8 +171,6 @@ public class MeetingActivity extends AppCompatActivity {
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.isSuccessful()){
                         Toast.makeText(MeetingActivity.this,"sande",Toast.LENGTH_SHORT).show();
-                        messages.add(messages.size(),message);
-                        adapter.notifyDataSetChanged();
                         ((EditText)findViewById(R.id.messageText)).setText("");
                     }else {
                         Toast.makeText(MeetingActivity.this, "something gone wrong", Toast.LENGTH_SHORT).show();
@@ -202,27 +185,66 @@ public class MeetingActivity extends AppCompatActivity {
         }
     }
     private void updateMessages(){
-        App.getApi().getMessages(MainActivity.getAuthToken(),meeting.getId()).enqueue(new Callback<List<Message>>() {
+        App.getApi().getMessages(MainActivity.getAuthToken(),meeting.getId()).enqueue(new Callback<List<MessagingData>>() {
             @Override
-            public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
+            public void onResponse(Call<List<MessagingData>> call, Response<List<MessagingData>> response) {
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
                         messages.clear();
                         messages.addAll(response.body());
+                        adapter.notifyDataSetChanged();
                     }
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Message>> call, Throwable t) {
+            public void onFailure(Call<List<MessagingData>> call, Throwable t) {
                 Toast.makeText(MeetingActivity.this,t.getLocalizedMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(meetReceiver,new IntentFilter(ACTION_NEW_MESSAGE));
+        update();
+        activityResumed();
+    }
+    private class MeetReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context arg0, Intent intent) {
+            if (intent.getIntExtra("id", 0) == pid) {
+                MessagingData data = gson.fromJson(intent.getStringExtra("message"), MessagingData.class);
+                messages.add(messages.size(),data);
+                adapter.notifyDataSetChanged();
+            }
+        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this)
+                .unregisterReceiver(meetReceiver);
+        super.onPause();
+        activityPaused();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(meetReceiver);
     }
+    private static boolean activityVisible;
+    public static boolean isActivityVisible(){
+        return activityVisible;
+    }
+    private static void activityResumed() {
+        activityVisible = true;
+    }
+
+    private static void activityPaused() {
+        activityVisible = false;
+    }
+
 }

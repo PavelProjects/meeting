@@ -2,6 +2,7 @@ package com.example.root.meeting.apis;
 
 import com.example.root.meeting.ObRealm.Meeting;
 import com.example.root.meeting.ObRealm.Message;
+import com.example.root.meeting.ObRealm.MessagingData;
 import com.example.root.meeting.ObRealm.User;
 
 import java.util.List;
@@ -54,7 +55,7 @@ public interface Api {
     @POST("/crud-1.0.0-SNAPSHOT/messaging/send")
     Call<ResponseBody> sendMessage(@Header("Authorization") String authkey, @Body Message message);
     @GET("/crud-1.0.0-SNAPSHOT/messaging/{mid}")
-    Call<List<Message>> getMessages(@Header("Authorization") String authkey, @Path("mid") int mid);
+    Call<List<MessagingData>> getMessages(@Header("Authorization") String authkey, @Path("mid") int mid);
 
 
     @POST("/crud-1.0.0-SNAPSHOT/messaging/token")

@@ -6,11 +6,13 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.example.root.meeting.MainActivity;
 import com.example.root.meeting.Meeting.MeetingActivity;
 import com.example.root.meeting.ObRealm.Meeting;
+import com.example.root.meeting.ObRealm.MessagingData;
 import com.example.root.meeting.ObRealm.User;
 import com.example.root.meeting.Profile.UserProfile;
 import com.example.root.meeting.R;
@@ -30,6 +32,7 @@ import retrofit2.Response;
  */
 
 public class MessageService extends FirebaseMessagingService {
+    private Gson gson = new Gson();
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -78,11 +81,15 @@ public class MessageService extends FirebaseMessagingService {
             builder.setContentTitle("MESSAGE");
             builder.setContentText(remoteMessage.getData().get("message"));
             int mid= Integer.valueOf(remoteMessage.getData().get("mid"));
-            Intent intent =new Intent();
+            Intent intent =new Intent(MeetingActivity.ACTION_NEW_MESSAGE);
             intent.putExtra("id",mid);
-            intent.putExtra("message",remoteMessage.getData().get("message"));
-            sendBroadcast(intent);
-            id=3;
+            intent.putExtra("message",remoteMessage.getData().toString());
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+            if (MeetingActivity.isActivityVisible()){
+                id =0;
+            }else {
+                id = 3;
+            }
         }
         if (id!=0) {
             Notification notification = builder.build();
