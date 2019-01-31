@@ -12,6 +12,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -46,8 +47,8 @@ public interface Api {
     Call<ResponseBody> addUserToMeeting(@Header("Authorization") String authkey,@Path("id") int id,@Body User user);
     @GET("/crud-1.0.0-SNAPSHOT/users/fname/{name}")
     Call<List<User>> getUserByName(@Header("Authorization") String authkey, @Path("name") String name);
-    @DELETE("/crud-1.0.0-SNAPSHOT/nmeeting/{id}/{uid}")
-    Call<ResponseBody> deleteUserFromMeeting(@Header("Authorization") String authkey,@Path("id") int id,@Path("uid") String uid);
+    @HTTP(method = "DELETE", path = "/crud-1.0.0-SNAPSHOT/meeting/{id}", hasBody = true)
+    Call<ResponseBody> deleteUserFromMeeting(@Header("Authorization") String authkey,@Path("id") int id,@Body User user);
 
     @POST("/crud-1.0.0-SNAPSHOT/create")
     Call<User> createUser(@Header("Authorization") String authkey,@Body User user);

@@ -36,6 +36,7 @@ public class MeetingSettings extends AppCompatActivity {
     private Gson gson = new Gson();
     private Meeting meeting;
     private int pid;
+    private boolean flag;
     private android.support.v7.widget.Toolbar toolbar;
 
     @Override
@@ -64,11 +65,8 @@ public class MeetingSettings extends AppCompatActivity {
 
         lvMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                User user =users.get(i);
-                deleteUser(user.getId());
-                users.remove(i);
-                adapter.notifyDataSetChanged();
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                deleteUser(users.get(position));
             }
         });
         lvMain.setAdapter(adapter);
@@ -150,11 +148,16 @@ public class MeetingSettings extends AppCompatActivity {
         }
     }
 
-    private void deleteUser(String uid){
-        App.getApi().deleteUserFromMeeting(MainActivity.getAuthToken(),pid,uid).enqueue(new Callback<ResponseBody>() {
+    private boolean deleteUser(final User user){
+        flag= false;
+        App.getApi().deleteUserFromMeeting(MainActivity.getAuthToken(),pid,user).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-
+                if (response.isSuccessful()){
+                    users.remove(user);
+                    adapter.notifyDataSetChanged();
+                    flag=true;
+                }
             }
 
             @Override
@@ -162,6 +165,7 @@ public class MeetingSettings extends AppCompatActivity {
 
             }
         });
+        return flag;
     }
     public void saveChanges (View view){
         setResult(RESULT_OK);

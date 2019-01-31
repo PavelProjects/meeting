@@ -1,8 +1,13 @@
 package com.example.root.meeting.Meeting;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,7 +17,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.example.root.meeting.Auth_Reg.AuthWind;
 import com.example.root.meeting.MainActivity;
@@ -20,15 +24,9 @@ import com.example.root.meeting.ObRealm.Meeting;
 import com.example.root.meeting.R;
 import com.example.root.meeting.apis.App;
 import com.google.gson.Gson;
-
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.realm.Realm;
-import io.realm.RealmResults;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -40,6 +38,8 @@ import retrofit2.Response;
 public class StartMeetingActivity extends AppCompatActivity{
     private ArrayList<Meeting> meetings = new ArrayList<>();
     private ArrayAdapter<Meeting> adapter;
+    public static String ACTION_UPDATE = "update";
+    private MeetReceiver meetReceiver = new MeetReceiver();
     Gson gson =new Gson();
     private android.support.v7.widget.Toolbar toolbar;
 
@@ -88,6 +88,13 @@ public class StartMeetingActivity extends AppCompatActivity{
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(meetReceiver, new IntentFilter(ACTION_UPDATE));
+    }
+
     public void createMeeting(View view){
         startActivity(new Intent(this,CreateMeeting.class));
     }
@@ -97,8 +104,8 @@ public class StartMeetingActivity extends AppCompatActivity{
             public void onResponse(Call<List<Meeting>> call, Response<List<Meeting>> response) {
                 if (response.body() != null) {
                     if (response.code()==200) {
-                            meetings.clear();
-                            meetings.addAll(response.body());
+                        meetings.clear();
+                        meetings.addAll(response.body());
                         adapter.notifyDataSetChanged();
                     }
                 }else if (response.code()==401){
@@ -113,6 +120,13 @@ public class StartMeetingActivity extends AppCompatActivity{
                 Toast.makeText(StartMeetingActivity.this, "error " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    private class MeetReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context arg0, Intent intent) {
+            updateData();
+        }
+
     }
     public void exit (View view){
         updateData();

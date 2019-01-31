@@ -13,8 +13,7 @@ public class App extends Application {
     private Retrofit retrofit;
     private static String adress_mai="http://172.31.66.61:8080/";
     private static String adress_phone="http://192.168.43.246:8080/";
-    private static String adress_phone_2 = "http://192.168.43.246:8080/";
-    private static String adress_home = "http://192.168.2.98:8080/";
+    private static String adress_home = "http://192.168.2.95:8080/";
 
     @Override
     public void onCreate() {

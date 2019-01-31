@@ -3,9 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.root.meeting">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name=".apis.App"
@@ -16,6 +17,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCmzQrSP-XEzIpl14b7wbxROiDZZLmAEW8"/>
+            //android:value="@string/google_maps_key" />
+
+        <activity
+            android:name=".Meeting.MeetingPointMap"
+            android:label="@string/title_activity_meeting_point_map"></activity>
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,19 +34,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Auth_Reg.AuthWind"></activity>
-        <activity android:name=".Meeting.StartMeetingActivity"></activity>
-        <activity android:name=".Meeting.MeetingActivity"></activity>
-        <activity android:name=".Meeting.AddUserToMeeting"></activity>
-        <activity android:name=".Profile.UserProfile"></activity>
-        <activity android:name=".Meeting.CreateMeeting"></activity>
-        <activity android:name=".Auth_Reg.RegistrationActivity"></activity>
-        <activity android:name=".Profile.addFiend"></activity>
-        <activity android:name=".Meeting.MeetingSettings" android:windowSoftInputMode="adjustNothing"></activity>
+        <activity android:name=".Auth_Reg.AuthWind" />
+        <activity android:name=".Meeting.StartMeetingActivity" />
+        <activity android:name=".Meeting.MeetingActivity" />
+        <activity android:name=".Meeting.AddUserToMeeting" />
+        <activity android:name=".Profile.UserProfile" />
+        <activity android:name=".Meeting.CreateMeeting" />
+        <activity android:name=".Auth_Reg.RegistrationActivity" />
+        <activity android:name=".Profile.addFiend" />
+        <activity
+            android:name=".Meeting.MeetingSettings"
+            android:windowSoftInputMode="adjustNothing" />
 
         <service android:name=".Services.MessageService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
     </application>

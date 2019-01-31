@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.root.meeting.Auth_Reg.AuthWind;
+import com.example.root.meeting.Meeting.MeetingPointMap;
 import com.example.root.meeting.Meeting.StartMeetingActivity;
 import com.example.root.meeting.ObRealm.User;
 import com.example.root.meeting.Profile.UserProfile;
@@ -94,8 +95,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkToken(){
-        Log.d("fLog",token);
         if (token!=null) {
+            Log.d("fLog",token);
             App.getApi().authUser(MainActivity.getAuthToken()).enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
@@ -148,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         return "Basic " + Base64.encodeToString(data, Base64.NO_WRAP);
     }
     public void updateData(){
-        App.getApi().getUsers(getAuthToken()).enqueue(new Callback<List<User>>() {
+        App.getApi().getFriends(getAuthToken()).enqueue(new Callback<List<User>>() {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                 if (response.body() != null) {
@@ -189,6 +190,10 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("password",null);
         editor.apply();
         finish();
+    }
+
+    public void openMap(View view){
+        startActivity(new Intent(MainActivity.this, MeetingPointMap.class));
     }
 
     @Override

@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.example.root.meeting.MainActivity;
 import com.example.root.meeting.Meeting.MeetingActivity;
+import com.example.root.meeting.Meeting.StartMeetingActivity;
 import com.example.root.meeting.ObRealm.Meeting;
 import com.example.root.meeting.ObRealm.MessagingData;
 import com.example.root.meeting.ObRealm.User;
@@ -52,44 +53,54 @@ public class MessageService extends FirebaseMessagingService {
                         .setColorized(true)
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setVibrate(new long[] { 1000, 100, 1000});
-
-        if (remoteMessage.getData().get("event").equals("add_to_meeting")){
-            Intent resultIntent = new Intent(this,MeetingActivity.class).putExtra("meeting",remoteMessage.getData().get("info"));
-            PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
-            builder.setContentInfo(remoteMessage.getData().get("info"));
-            builder.setContentTitle("Meetings");
-            builder.setContentText("You have been invited to the meeting!");
-            builder.setContentIntent(resultPendingIntent);
-            id= 1;
-        }
-        if (remoteMessage.getData().get("event").equals("add_friend")){
-            Intent resultIntent = new Intent(this,UserProfile.class);
-            PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
-            User user = new Gson().fromJson(remoteMessage.getData().get("user"),User.class);
-            builder.setContentTitle("new friend!");
-            builder.setContentText(user.getUsername()+" added you as a friend!");
-            builder.setContentIntent(resultPendingIntent);
-            id = 2;
-        }
-
-        if (remoteMessage.getData().get("event").equals("update_meeting")){
-            sendBroadcast(new Intent().setAction(MeetingActivity.ACTION_UPDATE));
-        }
-        if (remoteMessage.getData().get("event").equals("message")){
-            builder.setContentTitle("MESSAGE");
-            builder.setContentText(remoteMessage.getData().get("message"));
-            int mid= Integer.valueOf(remoteMessage.getData().get("mid"));
-            Intent intent =new Intent(MeetingActivity.ACTION_NEW_MESSAGE);
-            intent.putExtra("id",mid);
-            intent.putExtra("message",remoteMessage.getData().toString());
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-            if (MeetingActivity.isActivityVisible()){
-                id =0;
-            }else {
-                id = 3;
-            }
+        Intent resultIntent;
+        PendingIntent resultPendingIntent;
+        Intent intent;
+        switch (remoteMessage.getData().get("event")){
+            case "add_to_meeting" :
+                resultIntent = new Intent(this,StartMeetingActivity.class);
+                resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+                builder.setContentInfo(remoteMessage.getData().get("info"));
+                builder.setContentTitle("Meetings");
+                builder.setContentText("You have been invited to the meeting!");
+                builder.setContentIntent(resultPendingIntent);
+                intent =new Intent(StartMeetingActivity.ACTION_UPDATE);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+                id= 1;
+                break;
+            case "add_friend" :
+                resultIntent = new Intent(this,UserProfile.class);
+                resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+                User user = new Gson().fromJson(remoteMessage.getData().get("user"),User.class);
+                builder.setContentTitle("new friend!");
+                builder.setContentText(user.getUsername()+" added you as a friend!");
+                builder.setContentIntent(resultPendingIntent);
+                id = 2;
+                break;
+            case "message" :
+                int mid= Integer.valueOf(remoteMessage.getData().get("mid"));
+                intent =new Intent(MeetingActivity.ACTION_NEW_MESSAGE);
+                intent.putExtra("id",mid);
+                intent.putExtra("message",remoteMessage.getData().toString());
+                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+                if (MeetingActivity.isActivityVisible()){
+                    id =0;
+                }else {
+                    resultIntent = new Intent(this,StartMeetingActivity.class);
+                    resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT);
+                    builder.setContentTitle("MESSAGE");
+                    builder.setContentText(remoteMessage.getData().get("message"));
+                    builder.setContentIntent(resultPendingIntent);
+                    id = 3;
+                }
+                break;
+            case "delete_from_meeting" :
+                intent =new Intent(MeetingActivity.DELETE_FROM_MEETING);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+                break;
         }
         if (id!=0) {
             Notification notification = builder.build();
