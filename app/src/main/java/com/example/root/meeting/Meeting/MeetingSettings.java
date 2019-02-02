@@ -77,7 +77,6 @@ public class MeetingSettings extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.update_button,menu);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
@@ -87,6 +86,27 @@ public class MeetingSettings extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case 2: if (resultCode == RESULT_OK) {
+                    User user = gson.fromJson(data.getStringExtra("user"), User.class);
+                    users.add(user);
+                    adapter.notifyDataSetChanged();
+                }
+                break;
+            case 3:
+                meeting.setLatitude(data.getDoubleExtra("latitude",0));
+                meeting.setLongitude(data.getDoubleExtra("longitude",0));
+                savePlace(meeting);
+        }
+    }
+
+
     private void update(){
         App.getApi().getMeeting(MainActivity.getAuthToken(), pid).enqueue(new Callback<Meeting>() {
             @Override
@@ -118,7 +138,7 @@ public class MeetingSettings extends AppCompatActivity {
         if(name != null){
             meeting.setId(pid);
             meeting.setName(name);
-            App.getApi().updateMeeting(MainActivity.getAuthToken(), meeting).enqueue(new Callback<ResponseBody>() {
+            App.getApi().updateMeetingName(MainActivity.getAuthToken(), meeting).enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.isSuccessful()){
@@ -134,20 +154,27 @@ public class MeetingSettings extends AppCompatActivity {
             });
         }
     }
+    public void changePlace(View view){
+        startActivityForResult(new Intent(MeetingSettings.this,ChangePlace.class),3);
+    }
+    private void savePlace(Meeting meeting){
+        App.getApi().updateMeetingPlace(MainActivity.getAuthToken(),meeting).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()){
+                    Toast.makeText(MeetingSettings.this,"changed",Toast.LENGTH_SHORT).show();
+                }
+            }
 
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(MeetingSettings.this,t.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     public void addUser(View view){
         startActivityForResult(new Intent(MeetingSettings.this,AddUserToMeeting.class).putExtra("id",pid),2);
     }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK){
-            User user = gson.fromJson(data.getStringExtra("user"),User.class);
-            users.add(user);
-            adapter.notifyDataSetChanged();
-        }
-    }
-
     private boolean deleteUser(final User user){
         flag= false;
         App.getApi().deleteUserFromMeeting(MainActivity.getAuthToken(),pid,user).enqueue(new Callback<ResponseBody>() {

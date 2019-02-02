@@ -3,40 +3,64 @@ package com.example.root.meeting.Meeting;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.View;
+
 import com.example.root.meeting.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MeetingPointMap extends FragmentActivity implements OnMapReadyCallback{
+public class ChangePlace extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerDragListener {
 
     private GoogleMap mMap;
-    private LatLng startLatLng;
     private double latitude, longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_meeting_point_map);
+        setContentView(R.layout.activity_change_place);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(R.id.mapChange);
         mapFragment.getMapAsync(this);
-        Intent intent = getIntent();
-        longitude=intent.getDoubleExtra("long",0);
-        latitude=intent.getDoubleExtra("lat",0);
-        startLatLng= new LatLng(latitude,longitude);
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setOnMarkerDragListener(this);
         mMap.addMarker(new MarkerOptions()
-                .position(startLatLng)
+                .position(new LatLng(0,0))
                 .title("MEETING POINT")
+                .draggable(true)
+
         );
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(startLatLng));
+    }
+
+    public void savePlace(View view){
+        Intent intent = new Intent();
+        intent.putExtra("latitude",latitude);
+        intent.putExtra("longitude",longitude);
+        setResult(RESULT_OK,intent);
+        finish();
+    }
+
+    @Override
+    public void onMarkerDragStart(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+        longitude=marker.getPosition().longitude;
+        latitude=marker.getPosition().latitude;
     }
 }

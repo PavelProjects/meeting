@@ -37,8 +37,11 @@ public interface Api {
 
     @POST("/crud-1.0.0-SNAPSHOT/meeting")
     Call<Meeting> createMeeting(@Header("Authorization") String authkey,@Body Meeting meeting);
-    @PUT("/crud-1.0.0-SNAPSHOT/meeting/update")
-    Call<ResponseBody> updateMeeting(@Header("Authorization") String authkey,@Body Meeting meeting);
+    @PUT("/crud-1.0.0-SNAPSHOT/meeting/updateName")
+    Call<ResponseBody> updateMeetingName(@Header("Authorization") String authkey, @Body Meeting meeting);
+    @PUT("/crud-1.0.0-SNAPSHOT/meeting/updatePlace")
+    Call<ResponseBody> updateMeetingPlace(@Header("Authorization") String authkey, @Body Meeting meeting);
+
     @GET("/crud-1.0.0-SNAPSHOT/meeting")
     Call<List<Meeting>> getAllMeetings(@Header("Authorization") String authkey);
     @GET("/crud-1.0.0-SNAPSHOT/meeting/{id}")

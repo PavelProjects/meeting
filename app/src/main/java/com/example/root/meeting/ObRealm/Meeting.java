@@ -24,6 +24,24 @@ public class Meeting implements Serializable{
     private Date date;
     private String time;
     private String adress;
+    private double latitude;
+    private double longitude;
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
 
     public void setId(int id) {
         this.id = id;

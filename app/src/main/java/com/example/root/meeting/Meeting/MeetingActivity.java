@@ -1,12 +1,15 @@
 package com.example.root.meeting.Meeting;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -27,6 +30,11 @@ import com.example.root.meeting.ObRealm.Meeting;
 import com.example.root.meeting.ObRealm.Message;
 import com.example.root.meeting.R;
 import com.example.root.meeting.apis.App;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
@@ -165,6 +173,12 @@ public class MeetingActivity extends AppCompatActivity {
         }
     }
 
+    public void openMap(View view){
+        Intent intent = new Intent(MeetingActivity.this,MeetingPointMap.class);
+        intent.putExtra("long",meeting.getLongitude());
+        intent.putExtra("lat",meeting.getLatitude());
+        startActivity(intent);
+    }
 
     public void sendMessage(View view) {
         String mes = ((EditText) findViewById(R.id.messageText)).getText().toString();
