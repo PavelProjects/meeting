@@ -2,12 +2,14 @@
     <string name="app_name">meeting</string>
     <string name="settings">settings</string>
     <string name="friends">friends</string>
+    <string name="addFriends">add friends</string>
     <string name="exit">exit</string>
     <string name="profile">profile</string>
     <string name="meetings">meetings</string>
     <string name="openMap">open map</string>
     <string name="change">change</string>
     <string name="changePlace">change place</string>
+    <string name="create">create</string>
     <string name="title_activity_meeting_point_map">Map</string>
     <string name="title_activity_change_place">Change Place</string>
 </resources>

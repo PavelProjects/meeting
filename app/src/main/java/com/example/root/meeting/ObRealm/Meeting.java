@@ -23,7 +23,6 @@ public class Meeting implements Serializable{
     private ArrayList<User> users= new ArrayList<>();
     private Date date;
     private String time;
-    private String adress;
     private double latitude;
     private double longitude;
 
@@ -82,17 +81,11 @@ public class Meeting implements Serializable{
         return date;
     }
 
-    public String getAdress() {
-        return adress;
-    }
 
     public String getTime() {
         return time;
     }
 
-    public void setAdress(String adress) {
-        this.adress = adress;
-    }
 
     public void setDate(Date date) {
         this.date = date;

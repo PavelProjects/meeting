@@ -49,7 +49,8 @@ import retrofit2.Response;
 
 public class MeetingActivity extends AppCompatActivity {
     private List<MessagingData> messages = new ArrayList<>();
-    private ArrayAdapter<MessagingData> adapter; int i;
+    private ArrayAdapter<MessagingData> adapter;
+    private int i;
     private Meeting meeting = new Meeting();
     private int pid = 0;
     public static String ACTION_NEW_MESSAGE = "NEW_MESSAGE";
@@ -78,7 +79,6 @@ public class MeetingActivity extends AppCompatActivity {
             finish();
         }
         ((TextView) findViewById(R.id.meetingTimeDate)).setText(String.valueOf(meeting.getDate()) + ":" + meeting.getTime());
-        ((TextView) findViewById(R.id.meetingAddress)).setText(meeting.getAdress());
         updateMessages();
         ListView lvMain = (ListView) findViewById(R.id.messages);
         adapter = new ArrayAdapter<MessagingData>(this,
@@ -124,8 +124,9 @@ public class MeetingActivity extends AppCompatActivity {
                         meeting.setName(response.body().getName());
                         meeting.setDate(response.body().getDate());
                         meeting.setTime(response.body().getTime());
-                        meeting.setAdress(response.body().getAdress());
                         meeting.addAllUsers(response.body().getUsers());
+                        meeting.setLongitude(response.body().getLongitude());
+                        meeting.setLatitude(response.body().getLatitude());
                     } else {
                         getMeeting(id);
                     }
@@ -147,16 +148,15 @@ public class MeetingActivity extends AppCompatActivity {
             if (meeting.getUsers() != null) {
                 getSupportActionBar().setTitle(meeting.getName());
                 ((TextView) findViewById(R.id.meetingTimeDate)).setText(String.valueOf(meeting.getDate()) + ":" + meeting.getTime());
-                ((TextView) findViewById(R.id.meetingAddress)).setText(meeting.getAdress());
                 updateMessages();
                 adapter.notifyDataSetChanged();
             } else {
-                if (i<=4) {
+                if (i<=2) {
                     i++;
                     update();
                     Log.d("fLog","circle №"+i);
                 }else{
-                    Toast.makeText(this,"somthing gone wrong",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,"something gone wrong",Toast.LENGTH_SHORT).show();
                     finish();
                 }
             }

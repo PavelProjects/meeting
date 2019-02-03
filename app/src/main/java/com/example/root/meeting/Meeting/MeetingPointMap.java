@@ -26,7 +26,7 @@ public class MeetingPointMap extends FragmentActivity implements OnMapReadyCallb
         mapFragment.getMapAsync(this);
         Intent intent = getIntent();
         longitude=intent.getDoubleExtra("long",0);
-        latitude=intent.getDoubleExtra("lat",0);
+        latitude=intent.getDoubleExtra ("lat",0);
         startLatLng= new LatLng(latitude,longitude);
     }
 

@@ -116,7 +116,6 @@ public class MeetingSettings extends AppCompatActivity {
                         meeting.setName(response.body().getName());
                         meeting.setDate(response.body().getDate());
                         meeting.setTime(response.body().getTime());
-                        meeting.setAdress(response.body().getAdress());
                         meeting.addAllUsers(response.body().getUsers());
                     }
                 } else {
