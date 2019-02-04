@@ -50,7 +50,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:drawableLeft="@android:drawable/ic_search_category_default"
-        android:onClick="findUsers"
+        android:onClick="find"
         android:text="find"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

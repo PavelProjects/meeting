@@ -51,7 +51,7 @@
         <activity android:name=".Auth_Reg.AuthWind" />
         <activity android:name=".Meeting.StartMeetingActivity" />
         <activity android:name=".Meeting.MeetingActivity" />
-        <activity android:name=".Meeting.AddUserToMeeting" />
+        <activity android:name=".FindUser" />
         <activity android:name=".Profile.UserProfile" />
         <activity android:name=".Meeting.CreateMeeting" />
         <activity android:name=".Auth_Reg.RegistrationActivity" />

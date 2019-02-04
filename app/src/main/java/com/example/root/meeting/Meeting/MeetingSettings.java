@@ -15,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.root.meeting.FindUser;
 import com.example.root.meeting.MainActivity;
 import com.example.root.meeting.ObRealm.Meeting;
 import com.example.root.meeting.ObRealm.User;
@@ -94,9 +95,8 @@ public class MeetingSettings extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case 2: if (resultCode == RESULT_OK) {
-                    User user = gson.fromJson(data.getStringExtra("user"), User.class);
-                    users.add(user);
-                    adapter.notifyDataSetChanged();
+                    User user = gson.fromJson(data.getStringExtra("user"),User.class);
+                    addUserToParty(pid,user);
                 }
                 break;
             case 3:
@@ -131,6 +131,28 @@ public class MeetingSettings extends AppCompatActivity {
         ((EditText)findViewById(R.id.newName)).setText(meeting.getName());
         users = meeting.getUsers();
         adapter.notifyDataSetChanged();
+    }
+    private void addUserToParty(int pid, final User user){
+        App.getApi().addUserToMeeting(MainActivity.getAuthToken(),pid,user).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.body() != null) {
+                    if (response.isSuccessful()) {
+                        users.add(user);
+                        adapter.notifyDataSetChanged();
+                    }else if (response.code()==401){
+                        Toast.makeText(MeetingSettings.this,"bad auth values",Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(MeetingSettings.this,"internet problems",Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(MeetingSettings.this, "error " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
     public void changeNameSet (View view){
         String name  = ((EditText)findViewById(R.id.newName)).getText().toString();
@@ -172,7 +194,7 @@ public class MeetingSettings extends AppCompatActivity {
         });
     }
     public void addUser(View view){
-        startActivityForResult(new Intent(MeetingSettings.this,AddUserToMeeting.class).putExtra("id",pid),2);
+        startActivityForResult(new Intent(MeetingSettings.this, FindUser.class).putExtra("id",pid),2);
     }
     private boolean deleteUser(final User user){
         flag= false;

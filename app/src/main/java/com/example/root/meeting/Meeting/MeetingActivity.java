@@ -79,7 +79,6 @@ public class MeetingActivity extends AppCompatActivity {
             finish();
         }
         ((TextView) findViewById(R.id.meetingTimeDate)).setText(String.valueOf(meeting.getDate()) + ":" + meeting.getTime());
-        updateMessages();
         ListView lvMain = (ListView) findViewById(R.id.messages);
         adapter = new ArrayAdapter<MessagingData>(this,
                 android.R.layout.two_line_list_item, android.R.id.text1, messages) {
@@ -148,7 +147,7 @@ public class MeetingActivity extends AppCompatActivity {
             if (meeting.getUsers() != null) {
                 getSupportActionBar().setTitle(meeting.getName());
                 ((TextView) findViewById(R.id.meetingTimeDate)).setText(String.valueOf(meeting.getDate()) + ":" + meeting.getTime());
-                updateMessages();
+                //updateMessages();
                 adapter.notifyDataSetChanged();
             } else {
                 if (i<=2) {

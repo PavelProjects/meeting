@@ -103,7 +103,7 @@ public class StartMeetingActivity extends AppCompatActivity{
             @Override
             public void onResponse(Call<List<Meeting>> call, Response<List<Meeting>> response) {
                 if (response.body() != null) {
-                    if (response.code()==200) {
+                    if (response.isSuccessful()) {
                         meetings.clear();
                         meetings.addAll(response.body());
                         adapter.notifyDataSetChanged();
@@ -112,6 +112,8 @@ public class StartMeetingActivity extends AppCompatActivity{
                     Toast.makeText(StartMeetingActivity.this,"bad auth values",Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(StartMeetingActivity.this, AuthWind.class));
                     finish();
+                }else{
+                    Toast.makeText(StartMeetingActivity.this,"something gone wrong",Toast.LENGTH_SHORT).show();
                 }
             }
 

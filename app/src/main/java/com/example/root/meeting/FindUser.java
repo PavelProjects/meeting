@@ -1,4 +1,4 @@
-package com.example.root.meeting.Meeting;
+package com.example.root.meeting;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,16 +13,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.root.meeting.MainActivity;
 import com.example.root.meeting.ObRealm.User;
-import com.example.root.meeting.R;
 import com.example.root.meeting.apis.App;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,7 +28,7 @@ import retrofit2.Response;
  * Created by root on 28.04.18.
  */
 
-public class AddUserToMeeting extends AppCompatActivity {
+public class FindUser extends AppCompatActivity {
     private ArrayAdapter<User> adapter;
     private List<User> users = new ArrayList<>();
     Gson gson =new Gson();
@@ -55,12 +52,13 @@ public class AddUserToMeeting extends AppCompatActivity {
         lvMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                addUser(pid,users.get(position));
+                setResult(RESULT_OK,new Intent().putExtra("user",gson.toJson(users.get(position))));
+                finish();
             }
         });
     }
 
-    public void findUsers(View view){
+    public void find(View view){
         App.getApi().getUserByName(MainActivity.getAuthToken(),((EditText)findViewById(R.id.userName)).getText().toString()).enqueue(new Callback<List<User>>() {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
@@ -70,41 +68,19 @@ public class AddUserToMeeting extends AppCompatActivity {
                         users.addAll(response.body());
                         adapter.notifyDataSetChanged();
                     }else if (response.code()==401){
-                        Toast.makeText(AddUserToMeeting.this,"bad auth values",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(FindUser.this,"bad auth values",Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 } else {
-                    Toast.makeText(AddUserToMeeting.this,"internet problems",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(FindUser.this,"internet problems",Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<User>> call, Throwable t) {
-                Toast.makeText(AddUserToMeeting.this, "error " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(FindUser.this, "error " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
-    private void addUser(int pid, final User user){
-        App.getApi().addUserToMeeting(MainActivity.getAuthToken(),pid,user).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.body() != null) {
-                    if (response.isSuccessful()) {
-                        setResult(RESULT_OK,new Intent().putExtra("user",gson.toJson(user)));
-                        finish();
-                    }else if (response.code()==401){
-                        Toast.makeText(AddUserToMeeting.this,"bad auth values",Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                } else {
-                    Toast.makeText(AddUserToMeeting.this,"internet problems",Toast.LENGTH_SHORT).show();
-                }
-            }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(AddUserToMeeting.this, "error " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
 }
