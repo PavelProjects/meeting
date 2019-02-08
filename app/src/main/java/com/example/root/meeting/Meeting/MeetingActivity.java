@@ -18,12 +18,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.root.meeting.ArrayAdapters.MessageAdapter;
 import com.example.root.meeting.MainActivity;
 import com.example.root.meeting.ObRealm.MessagingData;
 import com.example.root.meeting.ObRealm.Meeting;
@@ -49,8 +51,8 @@ import retrofit2.Response;
 
 public class MeetingActivity extends AppCompatActivity {
     private List<MessagingData> messages = new ArrayList<>();
-    private ArrayAdapter<MessagingData> adapter;
-    private int i;
+    private MessageAdapter adapter;
+    private int i = 0;
     private Meeting meeting = new Meeting();
     private int pid = 0;
     public static String ACTION_NEW_MESSAGE = "NEW_MESSAGE";
@@ -59,40 +61,32 @@ public class MeetingActivity extends AppCompatActivity {
     private JsonReader reader;
     private MeetReceiver meetReceiver = new MeetReceiver();
     private Toolbar toolbar;
-    private SharedPreferences sharedPreferences;
+    public static String userMail;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.meeting_activity);
-        toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        toolbar = (Toolbar) findViewById(R.id.my_toolbar_meeting);
         setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
         meeting = gson.fromJson(intent.getStringExtra("meeting"), Meeting.class);
         if (meeting == null) {
             finish();
-        }
-        pid = meeting.getId();
-        if (pid == 0) {
-            finish();
+        }else {
+            pid = meeting.getId();
+            if (pid == 0) {
+                finish();
+            }
         }
         ((TextView) findViewById(R.id.meetingTimeDate)).setText(String.valueOf(meeting.getDate()) + ":" + meeting.getTime());
         ListView lvMain = (ListView) findViewById(R.id.messages);
-        adapter = new ArrayAdapter<MessagingData>(this,
-                android.R.layout.two_line_list_item, android.R.id.text1, messages) {
-            public View getView(int position, View convertView, ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                final MessagingData data = getItem(position);
-                ((TextView) view.findViewById(android.R.id.text1)).setText(data.getMessage());
-                ((TextView) view.findViewById(android.R.id.text2)).setText(data.getF());
-                return view;
-            }
-        };
+        adapter = new MessageAdapter(this,R.layout.my_message,messages);
         lvMain.setAdapter(adapter);
         update();
-        sharedPreferences = getSharedPreferences("UserKeys", MODE_PRIVATE);
+
     }
 
     @Override
@@ -126,8 +120,6 @@ public class MeetingActivity extends AppCompatActivity {
                         meeting.addAllUsers(response.body().getUsers());
                         meeting.setLongitude(response.body().getLongitude());
                         meeting.setLatitude(response.body().getLatitude());
-                    } else {
-                        getMeeting(id);
                     }
                 } else {
                     Toast.makeText(MeetingActivity.this, "error", Toast.LENGTH_SHORT).show();
@@ -142,22 +134,15 @@ public class MeetingActivity extends AppCompatActivity {
     }
 
     private void update() {
+        Log.d("fLog","UPDATE MEETING");
         getMeeting(pid);
         if (meeting != null) {
             if (meeting.getUsers() != null) {
                 getSupportActionBar().setTitle(meeting.getName());
                 ((TextView) findViewById(R.id.meetingTimeDate)).setText(String.valueOf(meeting.getDate()) + ":" + meeting.getTime());
-                //updateMessages();
+                updateMessages();
                 adapter.notifyDataSetChanged();
-            } else {
-                if (i<=2) {
-                    i++;
-                    update();
-                    Log.d("fLog","circle №"+i);
-                }else{
-                    Toast.makeText(this,"something gone wrong",Toast.LENGTH_SHORT).show();
-                    finish();
-                }
+                i=0;
             }
         } else {
             finish();
@@ -184,7 +169,6 @@ public class MeetingActivity extends AppCompatActivity {
         if (mes.length() > 0) {
             final Message message = new Message();
             final MessagingData data = new MessagingData();
-            data.setF(sharedPreferences.getString("username", ""));
             data.setMessage(mes);
             data.setMid(meeting.getId());
             data.setEvent("message");
@@ -195,8 +179,7 @@ public class MeetingActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.isSuccessful()) {
-                        //Toast.makeText(MeetingActivity.this, "sande", Toast.LENGTH_SHORT).show();
-                        ((EditText) findViewById(R.id.messageText)).setText("");
+                        ((EditText) findViewById(R.id.messageText)).getText().clear();
                     } else {
                         Toast.makeText(MeetingActivity.this, "something gone wrong", Toast.LENGTH_SHORT).show();
                     }
@@ -234,7 +217,6 @@ public class MeetingActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         LocalBroadcastManager.getInstance(this).registerReceiver(meetReceiver, new IntentFilter(ACTION_NEW_MESSAGE));
-        update();
         activityResumed();
     }
 

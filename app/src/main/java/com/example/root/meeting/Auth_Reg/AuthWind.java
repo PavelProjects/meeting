@@ -5,12 +5,15 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.util.Base64;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.root.meeting.MainActivity;
+import com.example.root.meeting.Meeting.MeetingActivity;
+import com.example.root.meeting.ObRealm.Meeting;
 import com.example.root.meeting.ObRealm.User;
 import com.example.root.meeting.R;
 import com.example.root.meeting.apis.App;
@@ -29,7 +32,7 @@ public class AuthWind extends AppCompatActivity {
     EditText un, ps;
     SharedPreferences userKeys;
     SharedPreferences.Editor editor;
-    private int code = 0;
+    private boolean code = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,15 +52,15 @@ public class AuthWind extends AppCompatActivity {
         password = ps.getText().toString();
         if (username != null && password != null) {
             check(username, password);
-            if (code==200) {
+            if (code) {
                 editor = userKeys.edit();
                 editor.putString("username", username);
                 editor.putString("password", password);
                 editor.apply();
-                Toast.makeText(AuthWind.this,"Sucsess",Toast.LENGTH_SHORT).show();
+                Toast.makeText(AuthWind.this,"Success",Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(AuthWind.this, MainActivity.class));
                 this.finish();
-            }else if (code==401){
+            }else {
                 Toast.makeText(AuthWind.this,"wrong auth values", Toast.LENGTH_SHORT).show();
             }
         } else {
@@ -80,11 +83,14 @@ public class AuthWind extends AppCompatActivity {
         App.getApi().authUser(getAuthToken(username,password)).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                code = response.code();
-                editor = userKeys.edit();
-                editor.putString("id",response.body().getId());
-                editor.putString("mail",response.body().getMail());
-                editor.apply();
+                if (response.isSuccessful()) {
+                    code = true;
+                    editor = userKeys.edit();
+                    editor.putString("id", response.body().getId());
+                    editor.putString("mail", response.body().getMail());
+                    editor.apply();
+                    MeetingActivity.userMail = response.body().getMail();
+                }
             }
 
             @Override

@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.root.meeting.Auth_Reg.AuthWind;
+import com.example.root.meeting.Meeting.MeetingActivity;
 import com.example.root.meeting.Meeting.MeetingPointMap;
 import com.example.root.meeting.Meeting.StartMeetingActivity;
 import com.example.root.meeting.ObRealm.User;
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
                 return view;
             }
         };
+        MeetingActivity.userMail=userKey.getString("mail","");
         lvMain.setAdapter(adapter);
         updateData();
         checkToken();
@@ -192,9 +194,6 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-    public void openMap(View view){
-        startActivity(new Intent(MainActivity.this, MeetingPointMap.class));
-    }
 
     @Override
     protected void onDestroy() {
